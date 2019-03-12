@@ -4,7 +4,7 @@ apply plugin: 'application'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    compile project(":test_server_contract")
+    implementation project(":test_server_contract")
 }
 
 mainClassName = "com.kaspersky.test_server_desktop.HostConnectionClientKt"
