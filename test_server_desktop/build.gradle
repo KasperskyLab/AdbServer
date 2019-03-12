@@ -1,0 +1,33 @@
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compile project(":test_server_contract")
+}
+
+mainClassName = "com.kaspersky.test_server_desktop.HostConnectionClientKt"
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+buildscript {
+    ext.kotlin_version = '1.3.11'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+task fatJar(type: Jar) {
+    baseName = 'HostConnectionClient'
+    with jar
+    manifest { attributes 'Main-Class': 'com.kaspersky.test_server_desktop.HostConnectionClientKt' }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+project.tasks["fatJar"].dependsOn(assemble)
