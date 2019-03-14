@@ -2,6 +2,7 @@ apply plugin: 'kotlin'
 apply plugin: 'maven'
 
 group = 'com.kaspersky.components'
+version = "$pTestServerMajor.$pTestServerMinor.$pTestServerBuild"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
