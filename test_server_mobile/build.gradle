@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11"
+    implementation "com.kaspersky.components:test-server-contract:+"
     implementation project(':test_server_contract')
 }
 
