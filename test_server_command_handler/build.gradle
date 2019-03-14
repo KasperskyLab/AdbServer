@@ -17,7 +17,7 @@ if (pPublish.toBoolean()) {
                 repository(url: uri('')) {
                     
                 }
-                pom.groupId = 'com.kaspersky.components'
+                pom.groupId = 'components - uitest-server'
                 pom.artifactId = ''
                 pom.version = ""
             }
