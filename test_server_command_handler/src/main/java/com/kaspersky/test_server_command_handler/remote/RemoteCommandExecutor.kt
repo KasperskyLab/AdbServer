@@ -9,11 +9,17 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.Executors
 
+private fun Exception.stackTraceToString(): String {
+    val stringWriter = StringWriter()
+    printStackTrace(PrintWriter(stringWriter))
+    return stringWriter.toString()
+}
+
 interface Logger {
     fun print(msg: String)
 }
 
-class DefaultLogger(val tag: String? = null) : Logger {
+class DefaultLogger(private val tag: String? = null) : Logger {
     override fun print(msg: String) {
         if (tag == null) {
             System.out.println(msg)
@@ -95,44 +101,29 @@ class RemoteCommandExecutor private constructor(
 
     @Throws(IOException::class)
     private fun connectAsServer() {
-        try {
-            if (isConnected) {
-                return
-            } else {
-                val socket = serverSocket.accept()
-                currentConnection = SocketConnection(socket,
-                        commandExecutor,
-                        bgExecutor,
-                        logger)
-                currentConnection?.connect()
-            }
-        } catch (e: IOException) {
-            throw e
+        if (isConnected) {
+            return
+        } else {
+            val socket = serverSocket.accept()
+            currentConnection = SocketConnection(socket,
+                    commandExecutor,
+                    bgExecutor,
+                    logger)
+            currentConnection?.connect()
         }
     }
 
     @Throws(IOException::class)
     private fun connectAsClient() {
-        try {
-            if (isConnected) {
-                return
-            } else {
-                val socket = Socket(ip, port)
-                currentConnection = SocketConnection(socket,
-                        commandExecutor,
-                        bgExecutor,
-                        logger)
-                currentConnection?.connect()
-            }
-        } catch (e: IOException) {
-            throw e
+        if (isConnected) {
+            return
+        } else {
+            val socket = Socket(ip, port)
+            currentConnection = SocketConnection(socket,
+                    commandExecutor,
+                    bgExecutor,
+                    logger)
+            currentConnection?.connect()
         }
-
     }
-}
-
-private fun Exception.stackTraceToString(): String {
-    val stringWriter = StringWriter()
-    printStackTrace(PrintWriter(stringWriter))
-    return stringWriter.toString()
 }
