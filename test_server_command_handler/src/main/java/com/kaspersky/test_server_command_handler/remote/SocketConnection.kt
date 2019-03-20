@@ -106,11 +106,7 @@ internal class SocketConnection(
     }
 
     private fun startCommandListenThread() {
-        commandListenThread = Thread {
-            while (!socket.isClosed) {
-                peekNextMessage()
-            }
-        }
+        commandListenThread = CommandListenThread()
         commandListenThread.start()
     }
 
@@ -173,6 +169,14 @@ internal class SocketConnection(
             }
         }
 
+    }
+
+    private inner class CommandListenThread : Thread("RemoveCommands listen thread") {
+        override fun run() {
+            while (!socket.isClosed) {
+                peekNextMessage()
+            }
+        }
     }
 }
 

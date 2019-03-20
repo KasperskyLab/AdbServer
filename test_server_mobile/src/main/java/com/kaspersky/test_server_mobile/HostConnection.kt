@@ -11,21 +11,21 @@ object HostConnection {
     private const val CONNECTION_ESTABLISH_TIMEOUT_SEC = 5L
     private val remoteCommandExecutor = RemoteCommandExecutor.server(DEVICE_PORT, LocalCommandExecutor())
 
-    private var watchdogThread: ConnectionWatchdogThread? = null
+    private var sWatchdogThread: WatchdogThread? = null
 
     @Synchronized
     fun start() {
-        if (watchdogThread == null) {
-            val thread = ConnectionWatchdogThread(remoteCommandExecutor)
+        if (sWatchdogThread == null) {
+            val thread = WatchdogThread(remoteCommandExecutor)
             thread.start()
-            watchdogThread = thread
+            sWatchdogThread = thread
         }
     }
 
     @Synchronized
     fun stop() {
-        watchdogThread?.disposed = true
-        watchdogThread = null
+        sWatchdogThread?.disposed = true
+        sWatchdogThread = null
         remoteCommandExecutor.disconnect()
     }
 
@@ -78,7 +78,7 @@ object HostConnection {
     }
 }
 
-private class ConnectionWatchdogThread(val remoteCommandExecutor: RemoteCommandExecutor) : Thread("Host server watchdog thread") {
+private class WatchdogThread(val remoteCommandExecutor: RemoteCommandExecutor) : Thread("Host connection watchdog thread") {
     var disposed = false
     override fun run() {
         while (!disposed) {

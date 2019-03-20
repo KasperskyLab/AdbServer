@@ -5,9 +5,9 @@ import com.kaspersky.test_server_command_handler.ICommandHandler
 import com.kaspersky.test_server_command_handler.local.LocalCommandExecutor
 import com.kaspersky.test_server_command_handler.remote.DefaultLogger
 import com.kaspersky.test_server_command_handler.remote.EmptyLogger
+import com.kaspersky.test_server_command_handler.remote.Logger
 import com.kaspersky.test_server_command_handler.remote.RemoteCommandExecutor
 import com.kaspersky.test_server_contract.*
-import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 private const val CMD_EXECUTION_TIMEOUT_MIN = 2L
 private const val MIN_PORT_VALUE = 8600
 
-private val deviceControllers: MutableCollection<DeviceConnectionController> = mutableListOf()
+private val deviceClients: MutableCollection<DeviceClient> = mutableListOf()
 private val lastDevicePort = AtomicInteger(MIN_PORT_VALUE)
 private var debugMode = false
 
@@ -50,16 +50,16 @@ fun main(args: Array<String>) {
     while (true) {
         val attachedDevices = attachedDevices()
         attachedDevices.forEach { device ->
-            if (deviceControllers.find { controller -> controller.device == device } == null) {
+            if (deviceClients.find { client -> client.device == device } == null) {
                 println("New device has been found: $device. Initialize connection to it...")
-                val connectionController = DeviceConnectionController(getFreePort(), device)
-                connectionController.init()
-                deviceControllers += connectionController
+                val client = DeviceClient(getFreePort(), device)
+                client.init()
+                deviceClients += client
             }
         }
-        deviceControllers.removeIf { controller ->
-            if (controller.device !in attachedDevices) {
-                controller.dispose()
+        deviceClients.removeIf { client ->
+            if (client.device !in attachedDevices) {
+                client.dispose()
                 return@removeIf true
             } else {
                 return@removeIf false
@@ -91,7 +91,7 @@ private fun attachedDevices(): List<String> {
             .toList()
 }
 
-private class DeviceConnectionController(val port: Int, val device: String) : ICommandHandler {
+private class DeviceClient(val port: Int, val device: String) : ICommandHandler {
     companion object {
         private const val IP = "127.0.0.1"
     }
@@ -100,40 +100,26 @@ private class DeviceConnectionController(val port: Int, val device: String) : IC
             IP,
             port,
             LocalCommandExecutor(this),
-            logger = if (debugMode) {
-                DefaultLogger(device)
-            } else {
-                EmptyLogger
-            }
+            logger = remoteClientLogger()
     )
+
+    private fun remoteClientLogger(): Logger {
+        return if (debugMode) {
+            DefaultLogger(device)
+        } else {
+            EmptyLogger
+        }
+    }
 
     val isRunning = AtomicReference<Boolean?>()
 
     fun init() {
         if (isRunning.compareAndSet(null, true)) {
-            var lastStateWasDisconnected = false
-            Thread {
-                executeAdbCommand("forward tcp:$port tcp:$DEVICE_PORT ", debugMode)
-                while (isRunning.get() == true) {
-                    if (!remoteCommandExecutor.isConnected) {
-                        if (!lastStateWasDisconnected) {
-                            println("Start connect retry to $device")
-                            lastStateWasDisconnected = true
-                        }
-                        runCatching { remoteCommandExecutor.connect() }
-                        if (remoteCommandExecutor.isConnected) {
-                            lastStateWasDisconnected = false
-                            println("Connected successfully to $device")
-                        }
-                    }
-                    sleep(500)
-                }
-            }.start()
+            WatchdogThread().start()
         } else {
             throw IllegalStateException("Internal errors(Seems init called twice)")
         }
     }
-
 
     fun dispose() {
         isRunning.set(false)
@@ -166,4 +152,24 @@ private class DeviceConnectionController(val port: Int, val device: String) : IC
         }
     }
 
+    inner class WatchdogThread : Thread("Device connection watchdog thread. Device = $device") {
+        override fun run() {
+            var lastStateWasDisconnected = false
+            executeAdbCommand("forward tcp:$port tcp:$DEVICE_PORT ", debugMode)
+            while (isRunning.get() == true) {
+                if (!remoteCommandExecutor.isConnected) {
+                    if (!lastStateWasDisconnected) {
+                        println("Start connect retry to $device")
+                        lastStateWasDisconnected = true
+                    }
+                    runCatching { remoteCommandExecutor.connect() }
+                    if (remoteCommandExecutor.isConnected) {
+                        lastStateWasDisconnected = false
+                        println("Connected successfully to $device")
+                    }
+                }
+                sleep(500)
+            }
+        }
+    }
 }
