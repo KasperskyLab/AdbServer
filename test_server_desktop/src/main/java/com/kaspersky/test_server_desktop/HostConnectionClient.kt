@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.regex.Pattern
 
 private const val CMD_EXECUTION_TIMEOUT_MIN = 2L
-private const val MIN_PORT_VALUE = 8600
+private const val MIN_PORT_VALUE = 9000
 
 private val deviceClients: MutableCollection<DeviceClient> = mutableListOf()
 private val lastDevicePort = AtomicInteger(MIN_PORT_VALUE)
@@ -22,22 +22,24 @@ private var debugMode = false
 
 private fun executeCmdCommand(cmdCommand: String, writeLogs: Boolean): String {
     if (writeLogs) {
-        println("Execute command: $cmdCommand started")
+        println("Execute command '$cmdCommand' started")
     }
     val process = Runtime.getRuntime().exec(cmdCommand)
-    val resultMsg = process.inputStream.bufferedReader().readText()
     process.waitFor(CMD_EXECUTION_TIMEOUT_MIN, TimeUnit.MINUTES)
     val exitCode = process.exitValue()
+    val resultMessage: String
     if (exitCode != 0) {
+        resultMessage = process.errorStream.bufferedReader().readText()
         if (writeLogs) {
-            println("Execute command: $cmdCommand error. Exit code: $exitCode, message: $resultMsg")
+            println("Execute command '$cmdCommand' error. Exit code: $exitCode, message: $resultMessage")
         }
-        throw CmdException(resultMsg)
+        throw CmdException(resultMessage)
     } else {
+        resultMessage = process.inputStream.bufferedReader().readText()
         if (writeLogs) {
-            println("Execute command: $cmdCommand success. Exit code: $exitCode, message: $resultMsg")
+            println("Execute command '$cmdCommand' success. Exit code: $exitCode, message: $resultMessage")
         }
-        return resultMsg
+        return resultMessage
     }
 }
 
