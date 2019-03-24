@@ -43,8 +43,6 @@ object HostConnection {
             throw e
         } catch (e: AdbException) {
             throw e
-        } catch (e: Exception) {
-            throw IOException("Unexpected error during adb command", e)
         }
     }
 
@@ -62,8 +60,6 @@ object HostConnection {
             throw e
         } catch (e: CmdException) {
             throw e
-        } catch (e: Exception) {
-            throw IOException("Unexpected error during cmd command", e)
         }
     }
 
