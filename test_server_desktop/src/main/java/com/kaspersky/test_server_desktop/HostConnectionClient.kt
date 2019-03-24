@@ -8,39 +8,58 @@ import com.kaspersky.test_server_command_handler.remote.EmptyLogger
 import com.kaspersky.test_server_command_handler.remote.Logger
 import com.kaspersky.test_server_command_handler.remote.RemoteCommandExecutor
 import com.kaspersky.test_server_contract.*
+import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import java.util.regex.Pattern
 
-private const val CMD_EXECUTION_TIMEOUT_MIN = 2L
+private const val EXECUTION_TIMEOUT_SECONDS = 2 * 60L
 private const val MIN_PORT_VALUE = 9000
 
 private val deviceClients: MutableCollection<DeviceClient> = mutableListOf()
 private val lastDevicePort = AtomicInteger(MIN_PORT_VALUE)
 private var debugMode = false
 
-private fun executeCmdCommand(cmdCommand: String, writeLogs: Boolean): String {
-    if (writeLogs) {
-        println("Execute command '$cmdCommand' started")
+private fun log(message: String) {
+    System.out.println("[${Calendar.getInstance().time}] $message")
+}
+
+@Throws(
+        CmdException::class,
+        IOException::class
+)
+private fun executeCmdCommand(cmdCommand: String,
+                              logEnabled: Boolean = true,
+                              logTag: String = ""): String {
+    if (logEnabled) {
+        log("$logTag: execute command '$cmdCommand' started")
     }
     val process = Runtime.getRuntime().exec(cmdCommand)
-    process.waitFor(CMD_EXECUTION_TIMEOUT_MIN, TimeUnit.MINUTES)
-    val exitCode = process.exitValue()
-    val resultMessage: String
-    if (exitCode != 0) {
-        resultMessage = process.errorStream.bufferedReader().readText()
-        if (writeLogs) {
-            println("Execute command '$cmdCommand' error. Exit code: $exitCode, message: $resultMessage")
+    if (process.waitFor(EXECUTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+        val exitCode = process.exitValue()
+        if (exitCode != 0) {
+            val error = process.errorStream.bufferedReader().readText()
+            if (logEnabled) {
+                log("$logTag: execute command '$cmdCommand' error. Exit code: $exitCode, message: $error")
+            }
+            throw CmdException(error)
+        } else {
+            val result = process.inputStream.bufferedReader().readText()
+            if (logEnabled) {
+                log("$logTag: execute command '$cmdCommand' success. Exit code: $exitCode, message: $result")
+            }
+            return result
         }
-        throw CmdException(resultMessage)
     } else {
-        resultMessage = process.inputStream.bufferedReader().readText()
-        if (writeLogs) {
-            println("Execute command '$cmdCommand' success. Exit code: $exitCode, message: $resultMessage")
+        try {
+            throw CmdException("Command execution timeout ($EXECUTION_TIMEOUT_SECONDS sec) overhead")
+        } finally {
+            process.destroy()
         }
-        return resultMessage
     }
+
 }
 
 fun main(args: Array<String>) {
@@ -53,7 +72,7 @@ fun main(args: Array<String>) {
         val attachedDevices = attachedDevices()
         attachedDevices.forEach { device ->
             if (deviceClients.find { client -> client.device == device } == null) {
-                println("New device has been found: $device. Initialize connection to it...")
+                log("New device has been found: $device. Initialize connection to it...")
                 val client = DeviceClient(getFreePort(), device)
                 client.init()
                 deviceClients += client
@@ -142,13 +161,9 @@ private class DeviceClient(val port: Int, val device: String) : ICommandHandler 
         }
     }
 
-    private fun executeAdbCommand(adbCommand: String, writeLogs: Boolean): String {
+    private fun executeAdbCommand(adbCommand: String, logEnabled: Boolean): String {
         try {
-            return if (!device.isEmpty()) {
-                executeCmdCommand("adb -s $device $adbCommand", writeLogs)
-            } else {
-                executeCmdCommand("adb $adbCommand", writeLogs)
-            }
+            return executeCmdCommand("adb -s $device $adbCommand", logEnabled, device)
         } catch (e: CmdException) {
             throw AdbException(e.message.orEmpty())
         }
@@ -156,18 +171,18 @@ private class DeviceClient(val port: Int, val device: String) : ICommandHandler 
 
     inner class WatchdogThread : Thread("Device connection watchdog thread. Device = $device") {
         override fun run() {
-            var lastStateWasDisconnected = false
+            var logRetry = false
             executeAdbCommand("forward tcp:$port tcp:$DEVICE_PORT ", debugMode)
             while (isRunning.get() == true) {
                 if (!remoteCommandExecutor.isConnected) {
-                    if (!lastStateWasDisconnected) {
-                        println("Start connect retry to $device")
-                        lastStateWasDisconnected = true
+                    if (!logRetry) {
+                        log("Start connect retry to $device")
+                        logRetry = true
                     }
                     runCatching { remoteCommandExecutor.connect() }
                     if (remoteCommandExecutor.isConnected) {
-                        lastStateWasDisconnected = false
-                        println("Connected successfully to $device")
+                        logRetry = false
+                        log("Connected successfully to $device")
                     }
                 }
                 sleep(500)
