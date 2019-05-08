@@ -32,11 +32,12 @@ task fatJar(type: Jar) {
 }
 project.tasks["fatJar"].dependsOn(assemble)
 
+artifacts {
+    archives fatJar
+}
+
 if (pPublish.toBoolean()) {
     uploadArchives {
-        artifacts {
-            archives fatJar
-        }
         repositories {
             mavenDeployer {
                 repository(url: uri('')) {
