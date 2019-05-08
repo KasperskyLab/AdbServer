@@ -31,3 +31,20 @@ task fatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 project.tasks["fatJar"].dependsOn(assemble)
+
+if (pPublish.toBoolean()) {
+    artifacts fatJar
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: uri('')) {
+                    
+                }
+                pom.groupId = 'com.kaspersky.components'
+                pom.artifactId = ''
+                pom.version = ""
+            }
+        }
+    }
+    uploadArchives.dependsOn assemble
+}
