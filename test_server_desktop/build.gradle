@@ -1,5 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'maven'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -32,12 +33,13 @@ task fatJar(type: Jar) {
 }
 project.tasks["fatJar"].dependsOn(assemble)
 
-artifacts {
-    archives fatJar
-}
-
 if (pPublish.toBoolean()) {
     uploadArchives {
+
+        artifacts {
+            archives fatJar
+        }
+
         repositories {
             mavenDeployer {
                 repository(url: uri('')) {
