@@ -26,20 +26,19 @@ repositories {
 }
 
 task fatJar(type: Jar) {
-    baseName = 'HostConnectionClient'
+    group = 'artifact'
+    description = "Create desktop client file"
+    classifier = 'client'
     with jar
     manifest { attributes 'Main-Class': 'com.kaspersky.test_server_desktop.HostConnectionClientKt' }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
-project.tasks["fatJar"].dependsOn(assemble)
 
 if (pPublish.toBoolean()) {
+    artifacts {
+        archives fatJar
+    }
     uploadArchives {
-
-        artifacts {
-            archives fatJar
-        }
-
         repositories {
             mavenDeployer {
                 repository(url: uri('')) {
@@ -51,5 +50,4 @@ if (pPublish.toBoolean()) {
             }
         }
     }
-    uploadArchives.dependsOn assemble
 }
