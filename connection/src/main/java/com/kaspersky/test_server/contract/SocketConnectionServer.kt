@@ -1,0 +1,3 @@
+package com.kaspersky.test_server.contract
+
+interface SocketConnectionServer : BaseSocketConnection
