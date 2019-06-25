@@ -1,8 +1,10 @@
 package com.kaspersky.test_server.contract
 
 // todo comments
-interface Executor {
+// todo make a wrapper up Result
+interface Executor<Result> {
 
-    fun <T> executeCommand(command: Command<T>)
+    // todo return value?
+    fun executeCommand(command: Command): Result
 
 }

@@ -1,3 +1,3 @@
 package com.kaspersky.test_server.contract
 
-interface SocketConnectionClient : BaseSocketConnection, Executor
+interface SocketConnectionClient<Result> : BaseSocketConnection, Executor<Result>
