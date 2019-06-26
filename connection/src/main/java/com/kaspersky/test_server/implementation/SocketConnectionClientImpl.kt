@@ -10,7 +10,6 @@ import com.kaspresky.test_server.log.Logger
 import java.lang.RuntimeException
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 internal class SocketConnectionClientImpl<CommandResult>(
