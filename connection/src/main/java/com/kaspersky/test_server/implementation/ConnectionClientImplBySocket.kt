@@ -1,7 +1,7 @@
 package com.kaspersky.test_server.implementation
 
 import com.kaspersky.test_server.api.Command
-import com.kaspersky.test_server.api.SocketConnectionClient
+import com.kaspersky.test_server.api.ConnectionClient
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -12,10 +12,10 @@ import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-internal class SocketConnectionClientImpl<CommandResult>(
+internal class ConnectionClientImplBySocket<CommandResult>(
     private val socket: Socket,
     private val logger: Logger
-) : SocketConnectionClient<CommandResult> {
+) : ConnectionClient<CommandResult> {
 
     companion object {
         private val COMMAND_TIMEOUT_MIN = TimeUnit.MINUTES.toSeconds(3)

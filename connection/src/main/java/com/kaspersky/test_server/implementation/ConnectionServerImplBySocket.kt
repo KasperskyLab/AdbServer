@@ -1,7 +1,7 @@
 package com.kaspersky.test_server.implementation
 
 import com.kaspersky.test_server.api.CommandHandler
-import com.kaspersky.test_server.api.SocketConnectionServer
+import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -11,11 +11,11 @@ import java.net.Socket
 import java.util.concurrent.Executors
 
 // todo logs, comments
-internal class SocketConnectionServerImpl<CommandResult>(
+internal class ConnectionServerImplBySocket<CommandResult>(
     private val socket: Socket,
     private val commandHandler: CommandHandler<CommandResult>,
     private val logger: Logger
-) : SocketConnectionServer {
+) : ConnectionServer {
 
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
     private val socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>> =
