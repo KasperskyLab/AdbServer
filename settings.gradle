@@ -1,4 +1,4 @@
-include ':test_server_contract', ':desktop', ':socket',
+include ':test_server_contract', ':desktop', ':desktop_device_connection',
         ':connection',
         ':test_server_command_handler',
         ':test_server_desktop',

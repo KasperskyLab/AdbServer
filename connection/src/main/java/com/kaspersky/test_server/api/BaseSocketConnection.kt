@@ -1,4 +1,4 @@
-package com.kaspersky.test_server.contract
+package com.kaspersky.test_server.api
 
 // todo think about
 // todo 1. @Throws(IOException::class) for methods

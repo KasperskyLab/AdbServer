@@ -17,18 +17,18 @@ object SocketFactory {
     private val lastClientPort = AtomicInteger(DESKTOP_MIN_PORT)
     private val logger: Logger = LoggerFactory.systemLogger()
 
-    fun getServerSocket(): () -> Socket = {
-        logger.i(javaClass.simpleName, "getServerSocket() start")
+    fun getDeviceSocket(): () -> Socket = {
+        logger.i(javaClass.simpleName, "getDeviceSocket() start")
         val readyServerSocket = serverSocket.accept()
-        logger.i(javaClass.simpleName, "getServerSocket() success")
+        logger.i(javaClass.simpleName, "getDeviceSocket() success")
         readyServerSocket
     }
 
-    fun getClientSocket(): () -> Socket = {
+    fun getDesktopSocket(): () -> Socket = {
         val port = getFreePort()
-        logger.i(javaClass.simpleName, "getClientSocket() with ip=$DESKTOP_IP, port=$port start")
+        logger.i(javaClass.simpleName, "getDesktopSocket() with ip=$DESKTOP_IP, port=$port start")
         val readyClientSocket = Socket(DESKTOP_IP, getFreePort())
-        logger.i(javaClass.simpleName, "getClientSocket() with ip=$DESKTOP_IP, port=$port success")
+        logger.i(javaClass.simpleName, "getDesktopSocket() with ip=$DESKTOP_IP, port=$port success")
         readyClientSocket
     }
 

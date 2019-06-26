@@ -1,6 +1,6 @@
 package com.kaspersky.test_server.implementation.transferring
 
-import com.kaspersky.test_server.contract.Command
+import com.kaspersky.test_server.api.Command
 import java.io.Serializable
 
 internal abstract class Message(open val command: Command) : Serializable

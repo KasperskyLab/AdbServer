@@ -1,4 +1,4 @@
-package com.kaspersky.test_server.contract
+package com.kaspersky.test_server.api
 
 interface CommandHandler<T> {
 

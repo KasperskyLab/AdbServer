@@ -1,7 +1,7 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspersky.test_server.contract.Command
-import com.kaspersky.test_server.contract.SocketConnectionClient
+import com.kaspersky.test_server.api.Command
+import com.kaspersky.test_server.api.SocketConnectionClient
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
