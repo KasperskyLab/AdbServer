@@ -1,14 +1,14 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.AdbCommand
-import com.kaspersky.test_server.api.Executor
+import com.kaspersky.test_server.api.AdbCommandExecutor
 import com.kaspresky.test_server.log.Logger
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class DesktopDeviceSocketConnectionForwardImpl(
-    private val executor: Executor,
+    private val executor: AdbCommandExecutor,
     private val logger: Logger
 ) : DesktopDeviceSocketConnection {
 
@@ -37,7 +37,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
 
     private fun forwardPorts(fromPort: Int, toPort: Int) {
         logger.i(javaClass.simpleName, "forwardPorts(fromPort=$fromPort, toPort=$toPort) start")
-        val result = executor.executeCommand(AdbCommand("forward tcp:$fromPort tcp:$toPort"))
+        val result = executor.execute(AdbCommand("forward tcp:$fromPort tcp:$toPort"))
         logger.i(javaClass.simpleName, "forwardPorts(fromPort=$fromPort, toPort=$toPort) result=$result")
     }
 

@@ -1,8 +1,8 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspersky.test_server.api.CommandHandler
+import com.kaspersky.test_server.api.AdbCommandExecutor
 import com.kaspersky.test_server.api.ConnectionServer
-import com.kaspersky.test_server.api.ExecutorResult
+import com.kaspersky.test_server.api.AdbCommandResult
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -14,12 +14,12 @@ import java.util.concurrent.Executors
 // todo logs, comments
 internal class ConnectionServerImplBySocket(
     private val socket: Socket,
-    private val commandHandler: CommandHandler<ExecutorResult>,
+    private val adbCommandExecutor: AdbCommandExecutor,
     private val logger: Logger
 ) : ConnectionServer {
 
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
-    private val socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<ExecutorResult>> =
+    private val socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<AdbCommandResult>> =
         SocketMessagesTransferring.createTransferring(socket)
     // todo change cache pool
     private val backgroundExecutor = Executors.newCachedThreadPool()
@@ -36,7 +36,7 @@ internal class ConnectionServerImplBySocket(
         socketMessagesTransferring.startListening(object : MessagesListener<TaskMessage> {
             override fun listenMessages(receiveModel: TaskMessage) {
                 backgroundExecutor.execute {
-                    val result = commandHandler.complete(receiveModel.command)
+                    val result = adbCommandExecutor.execute(receiveModel.command)
                     socketMessagesTransferring.sendMessage(
                         ResultMessage(receiveModel.command, result)
                     )

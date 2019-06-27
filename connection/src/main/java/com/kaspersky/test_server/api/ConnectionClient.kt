@@ -1,3 +1,7 @@
 package com.kaspersky.test_server.api
 
-interface ConnectionClient : BaseConnection, Executor
+interface ConnectionClient : BaseConnection {
+
+    fun executeAdbCommand(command: AdbCommand): AdbCommandResult
+
+}

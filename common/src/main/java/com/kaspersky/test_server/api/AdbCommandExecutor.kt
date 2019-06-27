@@ -2,9 +2,9 @@ package com.kaspersky.test_server.api
 
 // todo comments
 // todo make a wrapper up Result
-interface Executor {
+interface AdbCommandExecutor {
 
     // todo return value?
-    fun executeCommand(command: Command): ExecutorResult
+    fun execute(command: AdbCommand): AdbCommandResult
 
 }
