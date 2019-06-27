@@ -2,29 +2,30 @@ package com.kaspersky.test_server.implementation
 
 import com.kaspersky.test_server.api.Command
 import com.kaspersky.test_server.api.ConnectionClient
+import com.kaspersky.test_server.api.ExecutorResult
+import com.kaspersky.test_server.api.ExecutorResultStatus
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
 import com.kaspersky.test_server.implementation.transferring.TaskMessage
 import com.kaspresky.test_server.log.Logger
-import java.lang.RuntimeException
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-internal class ConnectionClientImplBySocket<CommandResult>(
+internal class ConnectionClientImplBySocket(
     private val socket: Socket,
     private val logger: Logger
-) : ConnectionClient<CommandResult> {
+) : ConnectionClient {
 
     companion object {
         private val COMMAND_TIMEOUT_MIN = TimeUnit.MINUTES.toSeconds(3)
     }
 
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
-    private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage> =
+    private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<ExecutorResult>, TaskMessage> =
         SocketMessagesTransferring.createTransferring(socket)
-    private val commandsInProgress = ConcurrentHashMap<Command, ResultWaiter<ResultMessage<CommandResult>>>()
+    private val commandsInProgress = ConcurrentHashMap<Command, ResultWaiter<ResultMessage<ExecutorResult>>>()
 
     // todo think about @Synchronized
     @Synchronized
@@ -35,8 +36,8 @@ internal class ConnectionClientImplBySocket<CommandResult>(
     }
 
     private fun handleMessages() {
-        socketMessagesTransferring.startListening(object : MessagesListener<ResultMessage<CommandResult>> {
-            override fun listenMessages(receiveModel: ResultMessage<CommandResult>) {
+        socketMessagesTransferring.startListening(object : MessagesListener<ResultMessage<ExecutorResult>> {
+            override fun listenMessages(receiveModel: ResultMessage<ExecutorResult>) {
                 // todo log in common and in a case when command is not in the map
                 commandsInProgress[receiveModel.command]?.latchResult(receiveModel)
             }
@@ -53,8 +54,8 @@ internal class ConnectionClientImplBySocket<CommandResult>(
         }
     }
 
-    override fun executeCommand(command: Command): CommandResult {
-        val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()
+    override fun executeCommand(command: Command): ExecutorResult {
+        val resultWaiter = ResultWaiter<ResultMessage<ExecutorResult>>()
         // todo check a correctness of string value is like a key value in map
         commandsInProgress[command] = resultWaiter
         socketMessagesTransferring.sendMessage(
@@ -63,9 +64,8 @@ internal class ConnectionClientImplBySocket<CommandResult>(
         val resultMessage = resultWaiter.waitResult(COMMAND_TIMEOUT_MIN, TimeUnit.SECONDS)
         commandsInProgress.remove(command)
         // todo output a log of resultMessage
-        // todo remove a RuntimeException
-        // todo add wrapper with state up CommandResult
-        return resultMessage?.data ?: throw RuntimeException()
+        // todo add description of failed status
+        return resultMessage?.data ?: ExecutorResult(ExecutorResultStatus.FAILED, "")
     }
 
 }

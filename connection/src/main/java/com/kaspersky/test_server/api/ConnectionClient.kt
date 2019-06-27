@@ -1,3 +1,3 @@
 package com.kaspersky.test_server.api
 
-interface ConnectionClient<Result> : BaseConnection, Executor<Result>
+interface ConnectionClient : BaseConnection, Executor

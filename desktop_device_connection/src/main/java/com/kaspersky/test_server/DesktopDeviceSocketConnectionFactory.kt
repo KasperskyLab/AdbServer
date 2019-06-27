@@ -8,7 +8,7 @@ object DesktopDeviceSocketConnectionFactory {
 
     fun <ExecutorResult> getSockets(
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        executor: Executor<ExecutorResult>,
+        executor: Executor,
         logger: Logger
     ): DesktopDeviceSocketConnection {
         return when(desktopDeviceSocketConnectionType) {
