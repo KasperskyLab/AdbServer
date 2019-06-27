@@ -3,7 +3,7 @@ package com.kaspersky.test_server.implementation
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class ResultWaiter<Result> {
+internal class ResultWaiter<Result> {
 
     @Volatile
     private var result: Result? = null

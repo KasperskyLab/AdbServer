@@ -2,7 +2,7 @@ package com.kaspersky.test_server.implementation
 
 import com.kaspersky.test_server.api.AdbCommand
 import com.kaspersky.test_server.api.ConnectionClient
-import com.kaspersky.test_server.api.AdbCommandResult
+import com.kaspersky.test_server.api.CommandResult
 import com.kaspersky.test_server.api.ExecutorResultStatus
 import com.kaspersky.test_server.implementation.transferring.MessagesListener
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
@@ -23,9 +23,9 @@ internal class ConnectionClientImplBySocket(
     }
 
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
-    private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<AdbCommandResult>, TaskMessage> =
+    private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage> =
         SocketMessagesTransferring.createTransferring(socket)
-    private val commandsInProgress = ConcurrentHashMap<AdbCommand, ResultWaiter<ResultMessage<AdbCommandResult>>>()
+    private val commandsInProgress = ConcurrentHashMap<AdbCommand, ResultWaiter<ResultMessage<CommandResult>>>()
 
     // todo think about @Synchronized
     @Synchronized
@@ -36,8 +36,8 @@ internal class ConnectionClientImplBySocket(
     }
 
     private fun handleMessages() {
-        socketMessagesTransferring.startListening(object : MessagesListener<ResultMessage<AdbCommandResult>> {
-            override fun listenMessages(receiveModel: ResultMessage<AdbCommandResult>) {
+        socketMessagesTransferring.startListening(object : MessagesListener<ResultMessage<CommandResult>> {
+            override fun listenMessages(receiveModel: ResultMessage<CommandResult>) {
                 // todo log in common and in a case when command is not in the map
                 commandsInProgress[receiveModel.command]?.latchResult(receiveModel)
             }
@@ -54,8 +54,8 @@ internal class ConnectionClientImplBySocket(
         }
     }
 
-    override fun executeAdbCommand(command: AdbCommand): AdbCommandResult {
-        val resultWaiter = ResultWaiter<ResultMessage<AdbCommandResult>>()
+    override fun executeAdbCommand(command: AdbCommand): CommandResult {
+        val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()
         // todo check a correctness of string value is like a key value in map
         commandsInProgress[command] = resultWaiter
         socketMessagesTransferring.sendMessage(
@@ -65,7 +65,7 @@ internal class ConnectionClientImplBySocket(
         commandsInProgress.remove(command)
         // todo output a log of resultMessage
         // todo add description of failed status
-        return resultMessage?.data ?: AdbCommandResult(ExecutorResultStatus.FAILED, "")
+        return resultMessage?.data ?: CommandResult(ExecutorResultStatus.FAILED, "")
     }
 
 }
