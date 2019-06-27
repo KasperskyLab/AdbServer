@@ -1,9 +1,9 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.api.AdbCommandExecutor
 import com.kaspresky.test_server.log.Logger
 import com.kaspersky.test_server.DesktopDeviceSocketConnectionType.*
 
+// todo think about singletons and a way to provide dependencies
 object DesktopDeviceSocketConnectionFactory {
 
     fun getSockets(
