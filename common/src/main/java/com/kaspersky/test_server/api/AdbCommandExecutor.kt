@@ -5,6 +5,6 @@ package com.kaspersky.test_server.api
 interface AdbCommandExecutor {
 
     // todo return value?
-    fun execute(command: AdbCommand): AdbCommandResult
+    fun execute(command: AdbCommand): CommandResult
 
 }
