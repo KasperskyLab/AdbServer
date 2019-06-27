@@ -1,4 +1,5 @@
 apply plugin: 'kotlin'
+apply plugin: 'application'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -7,6 +8,8 @@ dependencies {
     implementation project(":connection")
     implementation project(":desktop_device_connection")
 }
+
+mainClassName = "com.kaspersky.test_server.Main.kt"
 
 repositories {
     mavenCentral()

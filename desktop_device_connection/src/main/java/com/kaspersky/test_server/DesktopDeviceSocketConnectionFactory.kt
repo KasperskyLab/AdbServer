@@ -8,11 +8,10 @@ object DesktopDeviceSocketConnectionFactory {
 
     fun getSockets(
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        executor: AdbCommandExecutor,
         logger: Logger
     ): DesktopDeviceSocketConnection {
         return when(desktopDeviceSocketConnectionType) {
-            FORWARD -> DesktopDeviceSocketConnectionForwardImpl(executor, logger)
+            FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
             REVERSE -> throw RuntimeException()
         }
     }

@@ -18,11 +18,10 @@ internal class DeviceMirror(
         val desktopDeviceSocketConnection =
             DesktopDeviceSocketConnectionFactory.getSockets(
                 DesktopDeviceSocketConnectionType.FORWARD,
-                getExecutor(),
                 logger
             )
         connectionServer = ConnectionFactory.getServer(
-            desktopDeviceSocketConnection.getDesktopSocketLoad(),
+            desktopDeviceSocketConnection.getDesktopSocketLoad(getExecutor()),
             getExecutor(),
             logger
         )
@@ -45,7 +44,7 @@ internal class DeviceMirror(
 
     // todo inner or private?
     // todo logs
-    inner class WatchdogThread() : Thread("Connection watchdog thread from Desktop to Device = $deviceName") {
+    private inner class WatchdogThread() : Thread("Connection watchdog thread from Desktop to Device = $deviceName") {
         override fun run() {
             while (isRunning.get() == true) {
                 if (!connectionServer.isConnected()) {

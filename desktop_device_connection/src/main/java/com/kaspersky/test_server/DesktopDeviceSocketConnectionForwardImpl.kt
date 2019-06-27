@@ -8,7 +8,6 @@ import java.net.Socket
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class DesktopDeviceSocketConnectionForwardImpl(
-    private val executor: AdbCommandExecutor,
     private val logger: Logger
 ) : DesktopDeviceSocketConnection {
 
@@ -21,12 +20,12 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
     private val serverSocket by lazy { ServerSocket(DEVICE_PORT) }
     private val lastClientPort = AtomicInteger(DESKTOP_MIN_PORT)
 
-    override fun getDesktopSocketLoad(): () -> Socket = {
+    override fun getDesktopSocketLoad(executor: AdbCommandExecutor): () -> Socket = {
         val clientPort = getFreePort()
         logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort start")
         val readyClientSocket = Socket(LOCAL_HOST, clientPort)
         logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort success")
-        forwardPorts(clientPort, DEVICE_PORT)
+        forwardPorts(executor, clientPort, DEVICE_PORT)
         readyClientSocket
     }
 
@@ -34,7 +33,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
         return lastClientPort.incrementAndGet()
     }
 
-    private fun forwardPorts(fromPort: Int, toPort: Int) {
+    private fun forwardPorts(executor: AdbCommandExecutor, fromPort: Int, toPort: Int) {
         logger.i(javaClass.simpleName, "forwardPorts(fromPort=$fromPort, toPort=$toPort) start")
         val result = executor.execute(AdbCommand("forward tcp:$fromPort tcp:$toPort"))
         logger.i(javaClass.simpleName, "forwardPorts(fromPort=$fromPort, toPort=$toPort) result=$result")
