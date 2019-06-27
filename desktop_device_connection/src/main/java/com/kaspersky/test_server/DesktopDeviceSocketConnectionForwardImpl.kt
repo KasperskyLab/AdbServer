@@ -7,8 +7,8 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.atomic.AtomicInteger
 
-class DesktopDeviceSocketConnectionForwardImpl(
-    private val executor: Executor<String>,
+internal class DesktopDeviceSocketConnectionForwardImpl<ExecutorResult>(
+    private val executor: Executor<ExecutorResult>,
     private val logger: Logger
 ) : DesktopDeviceSocketConnection {
 

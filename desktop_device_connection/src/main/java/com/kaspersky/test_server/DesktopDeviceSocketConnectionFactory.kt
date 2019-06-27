@@ -6,9 +6,9 @@ import com.kaspersky.test_server.DesktopDeviceSocketConnectionType.*
 
 object DesktopDeviceSocketConnectionFactory {
 
-    fun getSockets(
+    fun <ExecutorResult> getSockets(
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        executor: Executor<String>,
+        executor: Executor<ExecutorResult>,
         logger: Logger
     ): DesktopDeviceSocketConnection {
         return when(desktopDeviceSocketConnectionType) {
