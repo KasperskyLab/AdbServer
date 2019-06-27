@@ -13,11 +13,12 @@ import java.util.concurrent.Executors
 
 // todo logs, comments
 internal class ConnectionServerImplBySocket(
-    private val socket: Socket,
+    private val socketCreation: () -> Socket,
     private val adbCommandExecutor: AdbCommandExecutor,
     private val logger: Logger
 ) : ConnectionServer {
 
+    private lateinit var socket: Socket
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
     private val socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>> =
         SocketMessagesTransferring.createTransferring(socket)
@@ -28,6 +29,7 @@ internal class ConnectionServerImplBySocket(
     @Synchronized
     override fun connect() {
         connectionMaker.connect {
+            socket = socketCreation.invoke()
             handleMessages()
         }
     }
@@ -53,5 +55,8 @@ internal class ConnectionServerImplBySocket(
             socket.close()
         }
     }
+
+    override fun isConnected(): Boolean =
+        connectionMaker.isConnected()
 
 }

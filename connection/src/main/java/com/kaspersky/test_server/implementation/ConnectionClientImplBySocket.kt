@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 internal class ConnectionClientImplBySocket(
-    private val socket: Socket,
+    private val socketCreation: () -> Socket,
     private val logger: Logger
 ) : ConnectionClient {
 
@@ -22,6 +22,7 @@ internal class ConnectionClientImplBySocket(
         private val COMMAND_TIMEOUT_MIN = TimeUnit.MINUTES.toSeconds(3)
     }
 
+    private lateinit var socket: Socket
     private var connectionMaker: ConnectionMaker = ConnectionMaker()
     private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage> =
         SocketMessagesTransferring.createTransferring(socket)
@@ -31,6 +32,7 @@ internal class ConnectionClientImplBySocket(
     @Synchronized
     override fun connect() {
         connectionMaker.connect {
+            socket = socketCreation.invoke()
             handleMessages()
         }
     }
@@ -53,6 +55,9 @@ internal class ConnectionClientImplBySocket(
             // todo cleaning a line of requests
         }
     }
+
+    override fun isConnected(): Boolean =
+        connectionMaker.isConnected()
 
     override fun executeAdbCommand(command: AdbCommand): CommandResult {
         val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()

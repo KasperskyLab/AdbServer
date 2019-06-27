@@ -8,16 +8,16 @@ import java.net.Socket
 object ConnectionFactory {
 
     fun getServer(
-        socket: Socket,
+        socketCreation: () -> Socket,
         adbCommandExecutor: AdbCommandExecutor,
         logger: Logger
     ): ConnectionServer =
-            ConnectionServerImplBySocket(socket, adbCommandExecutor, logger)
+            ConnectionServerImplBySocket(socketCreation, adbCommandExecutor, logger)
 
     fun getClient(
-        socket: Socket,
+        socketCreation: () -> Socket,
         logger: Logger
     ): ConnectionClient =
-        ConnectionClientImplBySocket(socket, logger)
+        ConnectionClientImplBySocket(socketCreation, logger)
 
 }

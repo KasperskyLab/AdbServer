@@ -10,4 +10,6 @@ interface BaseConnection {
 
     fun disconnect()
 
+    fun isConnected(): Boolean
+
 }

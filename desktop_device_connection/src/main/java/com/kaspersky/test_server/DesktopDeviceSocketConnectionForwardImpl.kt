@@ -21,12 +21,11 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
     private val serverSocket by lazy { ServerSocket(DEVICE_PORT) }
     private val lastClientPort = AtomicInteger(DESKTOP_MIN_PORT)
 
-    override fun getDesktopSocket(): () -> Socket = {
-        val port = getFreePort()
-        logger.i(javaClass.simpleName, "getDesktopSocket() with ip=$LOCAL_HOST, port=$port start")
+    override fun getDesktopSocketLoad(): () -> Socket = {
         val clientPort = getFreePort()
+        logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort start")
         val readyClientSocket = Socket(LOCAL_HOST, clientPort)
-        logger.i(javaClass.simpleName, "getDesktopSocket() with ip=$LOCAL_HOST, port=$port success")
+        logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort success")
         forwardPorts(clientPort, DEVICE_PORT)
         readyClientSocket
     }
@@ -41,10 +40,10 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
         logger.i(javaClass.simpleName, "forwardPorts(fromPort=$fromPort, toPort=$toPort) result=$result")
     }
 
-    override fun getDeviceSocket(): () -> Socket = {
-        logger.i(javaClass.simpleName, "getDeviceSocket() start")
+    override fun getDeviceSocketLoad(): () -> Socket = {
+        logger.i(javaClass.simpleName, "getDeviceSocketLoad() start")
         val readyServerSocket = serverSocket.accept()
-        logger.i(javaClass.simpleName, "getDeviceSocket() success")
+        logger.i(javaClass.simpleName, "getDeviceSocketLoad() success")
         readyServerSocket
     }
 

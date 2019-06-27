@@ -8,6 +8,7 @@ internal class ConnectionMaker {
     // todo synchronized
     fun connect(connectAction: () -> Unit) {
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
+            // todo is it ok to throw exception?
             throw IllegalStateException("Unexpected connection state = [$connectionState] appeared during connect")
         }
         if (connectionState == ConnectionState.CONNECTED) {
@@ -26,6 +27,7 @@ internal class ConnectionMaker {
     // todo synchronized
     fun disconnect(connectAction: () -> Unit) {
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
+            // todo is it ok to throw exception?
             throw IllegalStateException("Unexpected connection state = [$connectionState] appeared during disconnect")
         }
         if (connectionState == ConnectionState.DISCONNECTED) {
@@ -38,6 +40,9 @@ internal class ConnectionMaker {
             connectionState = ConnectionState.DISCONNECTED
         }
     }
+
+    fun isConnected(): Boolean =
+        connectionState == ConnectionState.CONNECTED
 
     private enum class ConnectionState {
         CONNECTING,
