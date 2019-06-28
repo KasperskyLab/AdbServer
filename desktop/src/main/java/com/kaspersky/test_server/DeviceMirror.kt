@@ -15,6 +15,7 @@ internal class DeviceMirror(
     private val isRunning = AtomicReference<Boolean>()
 
     fun startConnectionToDevice() {
+        logger.i(javaClass.simpleName, "startConnectionToDevice() with device=$deviceName start")
         val desktopDeviceSocketConnection =
             DesktopDeviceSocketConnectionFactory.getSockets(
                 DesktopDeviceSocketConnectionType.FORWARD,
@@ -38,18 +39,23 @@ internal class DeviceMirror(
     }
 
     fun stopConnectionToDevice() {
+        logger.i(javaClass.simpleName, "stopConnectionToDevice() with device=$deviceName")
         isRunning.set(false)
         connectionServer.disconnect()
     }
 
     // todo inner or private?
     // todo logs
-    private inner class WatchdogThread() : Thread("Connection watchdog thread from Desktop to Device = $deviceName") {
+    private inner class WatchdogThread : Thread("Connection watchdog thread from Desktop to Device = $deviceName") {
         override fun run() {
+            logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread start from Desktop to Device = $deviceName")
             while (isRunning.get() == true) {
                 if (!connectionServer.isConnected()) {
                     // todo logs result of connection
-                    runCatching { connectionServer.connect() }
+                    runCatching {
+                        logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread. Try to connect..")
+                        connectionServer.connect()
+                    }
                 }
                 sleep(500)
             }

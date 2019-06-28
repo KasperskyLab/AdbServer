@@ -19,24 +19,27 @@ internal class ConnectionServerImplBySocket(
 ) : ConnectionServer {
 
     private lateinit var socket: Socket
-    private var connectionMaker: ConnectionMaker = ConnectionMaker()
-    private val socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>> =
-        SocketMessagesTransferring.createTransferring(socket)
+    private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
+    private lateinit var socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>>
     // todo change cache pool
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
     // todo think about @Synchronized
     @Synchronized
     override fun connect() {
+        logger.i(javaClass.simpleName, "connect() start")
         connectionMaker.connect {
             socket = socketCreation.invoke()
             handleMessages()
         }
+        logger.i(javaClass.simpleName, "connect() completed")
     }
 
     private fun handleMessages() {
+        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(socket, logger)
         socketMessagesTransferring.startListening(object : MessagesListener<TaskMessage> {
             override fun listenMessages(receiveModel: TaskMessage) {
+                logger.i(javaClass.simpleName, "handleMessages() received message=$receiveModel")
                 backgroundExecutor.execute {
                     val result = adbCommandExecutor.execute(receiveModel.command)
                     socketMessagesTransferring.sendMessage(
@@ -50,10 +53,11 @@ internal class ConnectionServerImplBySocket(
     // todo think about @Synchronized
     @Synchronized
     override fun disconnect() {
+        logger.i(javaClass.simpleName, "disconnect() start")
         connectionMaker.disconnect {
-            socketMessagesTransferring.stopListening()
             socket.close()
         }
+        logger.i(javaClass.simpleName, "disconnect() completed")
     }
 
     override fun isConnected(): Boolean =

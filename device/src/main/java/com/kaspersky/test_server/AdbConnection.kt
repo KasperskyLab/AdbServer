@@ -16,6 +16,7 @@ object AdbConnection {
 
     @Synchronized
     fun start() {
+        logger.i(javaClass.simpleName, "start() start")
         val desktopDeviceSocketConnection =
             DesktopDeviceSocketConnectionFactory.getSockets(
                 DesktopDeviceSocketConnectionType.FORWARD,
@@ -31,6 +32,7 @@ object AdbConnection {
 
     @Synchronized
     fun stop() {
+        logger.i(javaClass.simpleName, "stop() start")
         isRunning.set(false)
         connectionClient.disconnect()
     }
@@ -58,10 +60,14 @@ object AdbConnection {
     // todo get name of Device?
     private class WatchdogThread : Thread("Connection watchdog thread from Device to Desktop") {
         override fun run() {
+            logger.i(AdbConnection.javaClass.simpleName, "WatchdogThread start from Device to Desktop")
             while (isRunning.get() == true) {
                 if (!connectionClient.isConnected()) {
                     // todo logs result of connection
-                    runCatching { connectionClient.connect() }
+                    runCatching {
+                        logger.i(AdbConnection.javaClass.simpleName, "WatchdogThread. Try to connect..")
+                        connectionClient.connect()
+                    }
                 }
                 // todo sleep?
             }

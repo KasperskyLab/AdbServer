@@ -15,6 +15,7 @@ internal class Desktop(
     private val devices: MutableCollection<DeviceMirror> = mutableListOf()
 
     fun startDevicesObserving() {
+        logger.i(javaClass.simpleName, "startDevicesObserving() start")
         while (true) {
             val namesOfAttachedDevicesByAdb = getAttachedDevicesByAdb()
             namesOfAttachedDevicesByAdb.forEach { deviceName ->
