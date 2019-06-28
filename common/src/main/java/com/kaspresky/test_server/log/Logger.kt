@@ -1,5 +1,8 @@
 package com.kaspresky.test_server.log
 
+/**
+ * Common interface to log all actions
+ */
 interface Logger {
 
     /**
