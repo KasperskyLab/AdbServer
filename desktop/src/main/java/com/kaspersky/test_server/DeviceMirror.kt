@@ -4,6 +4,7 @@ import com.kaspersky.test_server.api.*
 import com.kaspersky.test_server.cmd.CmdCommand
 import com.kaspersky.test_server.cmd.CmdCommandExecutor
 import com.kaspresky.test_server.log.Logger
+import java.lang.Exception
 import java.util.concurrent.atomic.AtomicReference
 
 internal class DeviceMirror(
@@ -52,9 +53,11 @@ internal class DeviceMirror(
             while (isRunning.get() == true) {
                 if (!connectionServer.isConnected()) {
                     // todo logs result of connection
-                    runCatching {
+                    try {
                         logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread. Try to connect..")
                         connectionServer.connect()
+                    } catch (e: Exception) {
+                        logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread. Try to connect.. was with exception: $e")
                     }
                 }
                 sleep(500)
