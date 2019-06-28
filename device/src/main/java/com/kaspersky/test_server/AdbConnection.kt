@@ -19,8 +19,7 @@ object AdbConnection {
         logger.i(javaClass.simpleName, "start() start")
         val desktopDeviceSocketConnection =
             DesktopDeviceSocketConnectionFactory.getSockets(
-                DesktopDeviceSocketConnectionType.FORWARD,
-                logger
+                DesktopDeviceSocketConnectionType.FORWARD
             )
         connectionClient = ConnectionFactory.getClient(
             desktopDeviceSocketConnection.getDeviceSocketLoad(),

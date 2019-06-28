@@ -19,8 +19,7 @@ internal class DeviceMirror(
         logger.i(javaClass.simpleName, "startConnectionToDevice() with device=$deviceName start")
         val desktopDeviceSocketConnection =
             DesktopDeviceSocketConnectionFactory.getSockets(
-                DesktopDeviceSocketConnectionType.FORWARD,
-                logger
+                DesktopDeviceSocketConnectionType.FORWARD
             )
         connectionServer = ConnectionFactory.getServer(
             desktopDeviceSocketConnection.getDesktopSocketLoad(getExecutor()),

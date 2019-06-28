@@ -1,17 +1,21 @@
 package com.kaspersky.test_server
 
-import com.kaspresky.test_server.log.Logger
 import com.kaspersky.test_server.DesktopDeviceSocketConnectionType.*
+import com.kaspresky.test_server.log.LoggerFactory
 
 // todo think about singletons and a way to provide dependencies
 object DesktopDeviceSocketConnectionFactory {
 
+    private val logger = LoggerFactory.systemLogger()
+    private val desktopDeviceSocketConnectionForwardImpl by
+            lazy { DesktopDeviceSocketConnectionForwardImpl(logger) }
+
     fun getSockets(
-        desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        logger: Logger
+        desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType
     ): DesktopDeviceSocketConnection {
         return when(desktopDeviceSocketConnectionType) {
-            FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
+            FORWARD -> desktopDeviceSocketConnectionForwardImpl
+            // todo correct exception
             REVERSE -> throw RuntimeException()
         }
     }

@@ -20,13 +20,16 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
     private val serverSocket by lazy { ServerSocket(DEVICE_PORT) }
     private val lastClientPort = AtomicInteger(DESKTOP_MIN_PORT)
 
-    override fun getDesktopSocketLoad(executor: AdbCommandExecutor): () -> Socket = {
+    override fun getDesktopSocketLoad(executor: AdbCommandExecutor): () -> Socket {
         val clientPort = getFreePort()
-        logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort start")
-        val readyClientSocket = Socket(LOCAL_HOST, clientPort)
-        logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort success")
+        logger.i(javaClass.simpleName, "clientPort=$clientPort")
         forwardPorts(executor, clientPort, DEVICE_PORT)
-        readyClientSocket
+        return {
+            logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort start")
+            val readyClientSocket = Socket(LOCAL_HOST, clientPort)
+            logger.i(javaClass.simpleName, "getDesktopSocketLoad() with ip=$LOCAL_HOST, port=$clientPort success")
+            readyClientSocket
+        }
     }
 
     private fun getFreePort(): Int {
