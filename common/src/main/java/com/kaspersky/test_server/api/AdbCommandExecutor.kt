@@ -1,8 +1,7 @@
 package com.kaspersky.test_server.api
 
 /**
- * High-level interface.
- * Executor of ADB commands.
+ * Executor of Adb commands.
  */
 interface AdbCommandExecutor {
 
