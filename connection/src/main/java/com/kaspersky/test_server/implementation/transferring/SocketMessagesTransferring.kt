@@ -1,43 +1,56 @@
 package com.kaspersky.test_server.implementation.transferring
 
+import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapper
 import com.kaspresky.test_server.log.Logger
-import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.net.Socket
+import java.util.concurrent.atomic.AtomicBoolean
 
 // todo logging, comments
 internal class SocketMessagesTransferring<ReceiveModel, SendModel> private constructor(
-    private val socket: Socket,
+    private val lightSocketWrapper: LightSocketWrapper,
     private val receiveModelClass: Class<ReceiveModel>,
     private val sendModelClass: Class<SendModel>,
-    private val logger: Logger
+    private val logger: Logger,
+    private val disruptAction: () -> Unit
 ) {
 
     companion object {
-        inline fun <reified Receive, reified Send> createTransferring(socket: Socket, logger: Logger): SocketMessagesTransferring<Receive, Send> {
-            return SocketMessagesTransferring(socket, Receive::class.java, Send::class.java, logger)
+        inline fun <reified Receive, reified Send> createTransferring(
+            lightSocketWrapper: LightSocketWrapper,
+            logger: Logger,
+            noinline disruptAction: () -> Unit
+        ): SocketMessagesTransferring<Receive, Send> {
+            return SocketMessagesTransferring(
+                lightSocketWrapper,
+                Receive::class.java,
+                Send::class.java,
+                logger,
+                disruptAction
+            )
         }
     }
 
     private lateinit var inputStream: ObjectInputStream
     private lateinit var outputStream: ObjectOutputStream
-    private lateinit var messagesListener: MessagesListener<ReceiveModel>
+    private lateinit var messagesListener: (ReceiveModel) -> Unit
+    private val isRunning: AtomicBoolean = AtomicBoolean(false)
 
-    fun startListening(listener: MessagesListener<ReceiveModel>) {
+    fun startListening(listener: (ReceiveModel) -> Unit) {
         logger.i(javaClass.simpleName, "startListening")
         messagesListener = listener
-        createIOStreams(socket)
+        try {
+            outputStream = ObjectOutputStream(lightSocketWrapper.getOutputStream())
+            inputStream = ObjectInputStream(lightSocketWrapper.getInputStream())
+        } catch (exception: Exception) {
+            disruptAction.invoke()
+            return
+        }
         startHandleMessages()
     }
 
-    @Throws(IOException::class)
-    private fun createIOStreams(socket: Socket) {
-        outputStream = ObjectOutputStream(socket.getOutputStream())
-        inputStream = ObjectInputStream(socket.getInputStream())
-    }
-
     private fun startHandleMessages() {
+        isRunning.set(true)
         MessagesListeningThread().start()
     }
 
@@ -46,17 +59,21 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
         try {
             outputStream.writeObject(sendModel)
             outputStream.flush()
-        } catch (e: IOException) {
+        } catch (exception: Exception) {
             // todo think about exception handling
-            if (!socket.isClosed) {
-                logger.e(javaClass.simpleName, "sendMessage(sendModel=$sendModel) failed with ${e.message.toString()}")
-            }
+            logger.e(javaClass.simpleName, "sendMessage(sendModel=$sendModel) failed! " +
+                    "isRunning = ${isRunning.get()}. exception=$exception"
+            )
         }
     }
 
-    private inner class MessagesListeningThread : Thread("MessagesListeningThread for socket = $socket") {
+    fun stopListening() {
+        isRunning.set(false)
+    }
+
+    private inner class MessagesListeningThread : Thread("MessagesListeningThread for lightSocketWrapper = $lightSocketWrapper") {
         override fun run() {
-            while (!socket.isClosed) {
+            while (isRunning.get()) {
                 peekNextMessage()
             }
         }
@@ -69,13 +86,15 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
             // todo check this
             if (obj.javaClass == receiveModelClass) {
                 logger.i(javaClass.simpleName, "peekNextMessage(message=$obj)")
-                messagesListener.listenMessages(obj as ReceiveModel)
+                messagesListener.invoke(obj as ReceiveModel)
             } else {
                 // todo exception name
                 logger.e(javaClass.simpleName, "peekNextMessage(message=$obj) but this message type is not $receiveModelClass")
+                disruptAction.invoke()
             }
         } catch (e: Exception) {
             logger.e(javaClass.simpleName, "peekNextMessage failed with ${e.message.toString()}")
+            disruptAction.invoke()
         }
     }
 

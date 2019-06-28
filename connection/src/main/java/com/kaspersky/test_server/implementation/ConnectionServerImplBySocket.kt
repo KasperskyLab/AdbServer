@@ -3,7 +3,7 @@ package com.kaspersky.test_server.implementation
 import com.kaspersky.test_server.api.AdbCommandExecutor
 import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspersky.test_server.api.CommandResult
-import com.kaspersky.test_server.implementation.transferring.MessagesListener
+import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
 import com.kaspersky.test_server.implementation.transferring.TaskMessage
@@ -36,25 +36,29 @@ internal class ConnectionServerImplBySocket(
     }
 
     private fun handleMessages() {
-        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(socket, logger)
-        socketMessagesTransferring.startListening(object : MessagesListener<TaskMessage> {
-            override fun listenMessages(receiveModel: TaskMessage) {
-                logger.i(javaClass.simpleName, "handleMessages() received message=$receiveModel")
-                backgroundExecutor.execute {
-                    val result = adbCommandExecutor.execute(receiveModel.command)
-                    socketMessagesTransferring.sendMessage(
-                        ResultMessage(receiveModel.command, result)
-                    )
-                }
+        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
+            lightSocketWrapper = LightSocketWrapperImpl(socket),
+            logger = logger,
+            disruptAction = { disconnect() }
+        )
+        socketMessagesTransferring.startListening { taskMessage ->
+            logger.i(javaClass.simpleName, "handleMessages() received taskMessage=$taskMessage")
+            backgroundExecutor.execute {
+                val result = adbCommandExecutor.execute(taskMessage.command)
+                socketMessagesTransferring.sendMessage(
+                    ResultMessage(taskMessage.command, result)
+                )
             }
-        })
+        }
     }
 
     // todo think about @Synchronized
+    // todo throw up an event of disconnecting to restart socket-connection
     @Synchronized
     override fun disconnect() {
         logger.i(javaClass.simpleName, "disconnect() start")
         connectionMaker.disconnect {
+            socketMessagesTransferring.stopListening()
             socket.close()
         }
         logger.i(javaClass.simpleName, "disconnect() completed")

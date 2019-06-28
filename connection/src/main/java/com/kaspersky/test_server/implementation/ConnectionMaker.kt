@@ -12,6 +12,7 @@ internal class ConnectionMaker(
     // todo synchronized
     fun connect(connectAction: () -> Unit) {
         logger.i(javaClass.simpleName, "connect() start")
+        logger.i(javaClass.simpleName, "connect(), current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
             // todo is it ok to throw exception?
             throw IllegalStateException("Unexpected connection state = [$connectionState] appeared during connect")
@@ -26,6 +27,7 @@ internal class ConnectionMaker(
             connectionState = ConnectionState.CONNECTED
             logger.i(javaClass.simpleName, "connect() => CONNECTED")
         } catch (exception: Exception) {
+            logger.e(javaClass.simpleName, "connect() with exception=$exception")
             connectionState = ConnectionState.DISCONNECTED
             throw exception
         }

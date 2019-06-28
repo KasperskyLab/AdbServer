@@ -4,7 +4,7 @@ import com.kaspersky.test_server.api.AdbCommand
 import com.kaspersky.test_server.api.ConnectionClient
 import com.kaspersky.test_server.api.CommandResult
 import com.kaspersky.test_server.api.ExecutorResultStatus
-import com.kaspersky.test_server.implementation.transferring.MessagesListener
+import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
 import com.kaspersky.test_server.implementation.transferring.TaskMessage
@@ -39,14 +39,16 @@ internal class ConnectionClientImplBySocket(
     }
 
     private fun handleMessages() {
-        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(socket, logger)
-        socketMessagesTransferring.startListening(object : MessagesListener<ResultMessage<CommandResult>> {
-            override fun listenMessages(receiveModel: ResultMessage<CommandResult>) {
-                // todo log in common and in a case when command is not in the map
-                logger.i(javaClass.simpleName, "handleMessages() received message=$receiveModel")
-                commandsInProgress[receiveModel.command]?.latchResult(receiveModel)
-            }
-        })
+        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
+            lightSocketWrapper = LightSocketWrapperImpl(socket),
+            logger = logger,
+            disruptAction = { disconnect() }
+        )
+        socketMessagesTransferring.startListening { resultMessage ->
+            // todo log in common and in a case when command is not in the map
+            logger.i(javaClass.simpleName, "handleMessages() received resultMessage=$resultMessage")
+            commandsInProgress[resultMessage.command]?.latchResult(resultMessage)
+        }
     }
 
     // todo think about @Synchronized
@@ -54,6 +56,7 @@ internal class ConnectionClientImplBySocket(
     override fun disconnect() {
         logger.i(javaClass.simpleName, "disconnect() start")
         connectionMaker.disconnect {
+            socketMessagesTransferring.stopListening()
             socket.close()
             // todo cleaning a line of requests
         }
@@ -64,6 +67,7 @@ internal class ConnectionClientImplBySocket(
         connectionMaker.isConnected()
 
     override fun executeAdbCommand(command: AdbCommand): CommandResult {
+        // todo put commands in stack to wait Server correctly and unlock other ResultWaiter
         logger.i(javaClass.simpleName, "executeAdbCommand(command=$command) started")
         val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()
         // todo check a correctness of string value is like a key value in map
