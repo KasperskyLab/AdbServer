@@ -1,5 +1,7 @@
 package com.kaspresky.test_server.log
 
+import java.lang.Exception
+
 /**
  * Common interface to log all actions
  */
@@ -28,11 +30,11 @@ interface Logger {
     /**
      * Error level of logging with tag.
      */
-    fun e(tag: String, text: String)
+    fun e(tag: String, exception: Exception)
 
     /**
      * Error level of logging with tag.
      */
-    fun e(tag: String, method: String, text: String)
+    fun e(tag: String, method: String, exception: Exception)
 
 }

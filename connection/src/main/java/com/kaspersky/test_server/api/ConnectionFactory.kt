@@ -7,14 +7,14 @@ import java.net.Socket
 
 object ConnectionFactory {
 
-    fun getServer(
+    fun createServer(
         socketCreation: () -> Socket,
         adbCommandExecutor: AdbCommandExecutor,
         logger: Logger
     ): ConnectionServer =
             ConnectionServerImplBySocket(socketCreation, adbCommandExecutor, logger)
 
-    fun getClient(
+    fun createClient(
         socketCreation: () -> Socket,
         logger: Logger
     ): ConnectionClient =

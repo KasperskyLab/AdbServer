@@ -4,7 +4,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 
-// todo comments
 internal class LightSocketWrapperImpl(private val socket: Socket) : LightSocketWrapper {
 
     override fun getOutputStream(): OutputStream = socket.getOutputStream()

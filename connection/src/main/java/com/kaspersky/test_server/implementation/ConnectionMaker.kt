@@ -7,51 +7,50 @@ internal class ConnectionMaker(
     private val logger: Logger
 ) {
 
+    private val tag = javaClass.simpleName
+    @Volatile
     private var connectionState: ConnectionState = ConnectionState.DISCONNECTED
 
-    // todo synchronized
+    @Synchronized
     fun connect(connectAction: () -> Unit) {
-        logger.i(javaClass.simpleName, "connect() start")
-        logger.i(javaClass.simpleName, "connect(), current state=$connectionState")
+        logger.i(tag, "connect()", "start")
+        logger.i(tag, "connect()", "current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
-            // todo is it ok to throw exception?
-            throw IllegalStateException("Unexpected connection state = [$connectionState] appeared during connect")
+            logger.i(tag, "connect()", "Unexpected connection state appeared during connect")
+            return
         }
         if (connectionState == ConnectionState.CONNECTED) {
-            logger.i(javaClass.simpleName, "connect() => already CONNECTED")
             return
         }
         connectionState = ConnectionState.CONNECTING
         try {
             connectAction.invoke()
             connectionState = ConnectionState.CONNECTED
-            logger.i(javaClass.simpleName, "connect() => CONNECTED")
+            logger.i(tag, "connect()", "updated state=$connectionState")
         } catch (exception: Exception) {
-            logger.e(javaClass.simpleName, "connect() with exception=$exception")
+            logger.e(tag, "connect()", exception)
             connectionState = ConnectionState.DISCONNECTED
-            throw exception
         }
-        logger.i(javaClass.simpleName, "connect() completed")
     }
 
-    // todo synchronized
+    @Synchronized
     fun disconnect(connectAction: () -> Unit) {
-        logger.i(javaClass.simpleName, "disconnect() start")
+        logger.i(tag, "disconnect()", "start")
+        logger.i(tag, "disconnect()", "current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
-            // todo is it ok to throw exception?
-            throw IllegalStateException("Unexpected connection state = [$connectionState] appeared during disconnect")
+            logger.i(tag, "disconnect()", "Unexpected connection state appeared during connect")
         }
         if (connectionState == ConnectionState.DISCONNECTED) {
             return
         }
         try {
             connectionState = ConnectionState.DISCONNECTING
+            logger.i(tag, "disconnect()", "updated state=$connectionState")
             connectAction.invoke()
         } finally {
             connectionState = ConnectionState.DISCONNECTED
-            logger.i(javaClass.simpleName, "connect() => DISCONNECTED")
+            logger.i(tag, "disconnect()", "updated state=$connectionState")
         }
-        logger.i(javaClass.simpleName, "disconnect() completed")
     }
 
     fun isConnected(): Boolean =

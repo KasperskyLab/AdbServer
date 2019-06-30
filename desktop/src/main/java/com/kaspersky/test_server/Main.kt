@@ -1,10 +1,12 @@
 package com.kaspersky.test_server
 
+import com.kaspersky.test_server.cmd.CmdCommandExecutor
 import com.kaspresky.test_server.log.LoggerFactory
 
-fun main(args: Array<String>) {
-    // todo handle args for debugger?
+internal fun main(args: Array<String>) {
+    // handle args for debugger or forward/reverse ports?
     val logger = LoggerFactory.systemLogger()
-    val desktop = Desktop(logger)
+    val cmdCommandExecutor = CmdCommandExecutor()
+    val desktop = Desktop(cmdCommandExecutor, logger)
     desktop.startDevicesObserving()
 }

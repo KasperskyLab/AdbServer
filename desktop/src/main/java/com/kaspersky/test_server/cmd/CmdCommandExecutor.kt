@@ -5,13 +5,13 @@ import com.kaspersky.test_server.api.ExecutorResultStatus
 import com.kaspresky.test_server.log.Logger
 import java.util.concurrent.TimeUnit
 
-// logs
-internal object CmdCommandExecutor {
+internal class CmdCommandExecutor {
 
-    private const val EXECUTION_TIMEOUT_SECONDS = 2 * 60L
+    companion object {
+        private const val EXECUTION_TIMEOUT_SECONDS = 2 * 60L
+    }
 
     fun execute(command: CmdCommand, logger: Logger): CommandResult {
-//        logger.i(javaClass.simpleName, "execute(command=$command) start")
         val process = Runtime.getRuntime().exec(command.body)
         if (process.waitFor(EXECUTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             val exitCode = process.exitValue()
@@ -23,13 +23,13 @@ internal object CmdCommandExecutor {
                 val success = "exitCode=$exitCode, message=${process.inputStream.bufferedReader().readText()}"
                 CommandResult(ExecutorResultStatus.SUCCESS, success)
             }
-//            logger.i(javaClass.simpleName, "execute(command=$command) with result=$commandResult")
             return commandResult
         }
         try {
-            val commandResult = CommandResult(ExecutorResultStatus.FAILED, "Command execution timeout ($EXECUTION_TIMEOUT_SECONDS sec) overhead")
-//            logger.i(javaClass.simpleName, "execute(command=$command) with result=$commandResult")
-            return commandResult
+            return CommandResult(
+                ExecutorResultStatus.FAILED,
+                "Command execution timeout ($EXECUTION_TIMEOUT_SECONDS sec) overhead"
+            )
         } finally {
             process.destroy()
         }

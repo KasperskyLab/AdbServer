@@ -1,62 +1,65 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.*
-import com.kaspersky.test_server.cmd.CmdCommand
 import com.kaspersky.test_server.cmd.CmdCommandExecutor
 import com.kaspresky.test_server.log.Logger
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicReference
 
-internal class DeviceMirror(
+internal class DeviceMirror private constructor(
     val deviceName: String,
+    private val connectionServer: ConnectionServer,
     private val logger: Logger
 ) {
 
-    private lateinit var connectionServer: ConnectionServer
+    companion object {
+        fun create(
+            deviceName: String,
+            cmdCommandExecutor: CmdCommandExecutor,
+            logger: Logger
+        ): DeviceMirror {
+            val desktopDeviceSocketConnection =
+                DesktopDeviceSocketConnectionFactory.getSockets(
+                    DesktopDeviceSocketConnectionType.FORWARD,
+                    logger
+                )
+            val adbCommandExecutor = AdbCommandExecutorImpl(
+                cmdCommandExecutor, deviceName, logger
+            )
+            val connectionServer = ConnectionFactory.createServer(
+                desktopDeviceSocketConnection.getDesktopSocketLoad(adbCommandExecutor),
+                adbCommandExecutor,
+                logger
+            )
+            return DeviceMirror(deviceName, connectionServer, logger)
+        }
+    }
+
+    private val tag = javaClass.simpleName
     private val isRunning = AtomicReference<Boolean>()
 
     fun startConnectionToDevice() {
-        logger.i(javaClass.simpleName, "startConnectionToDevice() with device=$deviceName start")
-        val desktopDeviceSocketConnection =
-            DesktopDeviceSocketConnectionFactory.getSockets(
-                DesktopDeviceSocketConnectionType.FORWARD
-            )
-        connectionServer = ConnectionFactory.getServer(
-            desktopDeviceSocketConnection.getDesktopSocketLoad(getExecutor()),
-            getExecutor(),
-            logger
-        )
+        logger.i(tag, "startConnectionToDevice", "connect to device=$deviceName start")
         isRunning.set(true)
         WatchdogThread().start()
     }
 
-    private fun getExecutor() = object : AdbCommandExecutor {
-        override fun execute(command: AdbCommand): CommandResult {
-            val cmdCommand = CmdCommand("adb -s $deviceName ${command.body}")
-            return CmdCommandExecutor.execute(cmdCommand, logger)
-        }
-
-    }
-
     fun stopConnectionToDevice() {
-        logger.i(javaClass.simpleName, "stopConnectionToDevice() with device=$deviceName")
+        logger.i(tag, "stopConnectionToDevice", "connection to device=$deviceName was stopped")
         isRunning.set(false)
         connectionServer.disconnect()
     }
 
-    // todo inner or private?
-    // todo logs
-    private inner class WatchdogThread : Thread("Connection watchdog thread from Desktop to Device = $deviceName") {
+    private inner class WatchdogThread : Thread() {
         override fun run() {
-            logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread start from Desktop to Device = $deviceName")
+            logger.i("$tag.WatchdogThread", "run", "WatchdogThread is started from Desktop to Device=$deviceName")
             while (isRunning.get() == true) {
                 if (!connectionServer.isConnected()) {
-                    // todo logs result of connection
                     try {
-                        logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread. Try to connect..")
+                        logger.i("$tag.WatchdogThread", "run", "Try to connect to Device=$deviceName...")
                         connectionServer.connect()
-                    } catch (e: Exception) {
-                        logger.i(this@DeviceMirror.javaClass.simpleName, "WatchdogThread. Try to connect.. was with exception: $e")
+                    } catch (exception: Exception) {
+                        logger.i("$tag.WatchdogThread", "run", "The attempt to connect to Device=$deviceName was with exception: $exception")
                     }
                 }
                 sleep(500)

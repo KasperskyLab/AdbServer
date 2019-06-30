@@ -31,18 +31,21 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
         }
     }
 
+    private val tag = javaClass.simpleName
     private lateinit var inputStream: ObjectInputStream
     private lateinit var outputStream: ObjectOutputStream
     private lateinit var messagesListener: (ReceiveModel) -> Unit
     private val isRunning: AtomicBoolean = AtomicBoolean(false)
 
     fun startListening(listener: (ReceiveModel) -> Unit) {
-        logger.i(javaClass.simpleName, "startListening")
+        logger.i(tag, "startListening", "start")
         messagesListener = listener
         try {
             outputStream = ObjectOutputStream(lightSocketWrapper.getOutputStream())
             inputStream = ObjectInputStream(lightSocketWrapper.getInputStream())
+            logger.i(tag, "startListening", "IO Streams were created")
         } catch (exception: Exception) {
+            logger.e(tag, "startListening", exception)
             disruptAction.invoke()
             return
         }
@@ -55,15 +58,12 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     }
 
     fun sendMessage(sendModel: SendModel) {
-        logger.i(javaClass.simpleName, "sendMessage(sendModel=$sendModel)")
+        logger.i(tag, "sendMessage","where sendModel=$sendModel")
         try {
             outputStream.writeObject(sendModel)
             outputStream.flush()
         } catch (exception: Exception) {
-            // todo think about exception handling
-            logger.e(javaClass.simpleName, "sendMessage(sendModel=$sendModel) failed! " +
-                    "isRunning = ${isRunning.get()}. exception=$exception"
-            )
+            logger.e(tag, "sendMessage", exception)
         }
     }
 
@@ -71,8 +71,9 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
         isRunning.set(false)
     }
 
-    private inner class MessagesListeningThread : Thread("MessagesListeningThread for lightSocketWrapper = $lightSocketWrapper") {
+    private inner class MessagesListeningThread : Thread() {
         override fun run() {
+            logger.i("$tag.MessagesListeningThread", "run", "start to work")
             while (isRunning.get()) {
                 peekNextMessage()
             }
@@ -85,15 +86,17 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
             obj = inputStream.readObject()
             // todo check this
             if (obj.javaClass == receiveModelClass) {
-                logger.i(javaClass.simpleName, "peekNextMessage(message=$obj)")
+                logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj")
                 messagesListener.invoke(obj as ReceiveModel)
             } else {
                 // todo exception name
-                logger.e(javaClass.simpleName, "peekNextMessage(message=$obj) but this message type is not $receiveModelClass")
+                logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj" +
+                        " but this message type is not $receiveModelClass"
+                )
                 disruptAction.invoke()
             }
-        } catch (e: Exception) {
-            logger.e(javaClass.simpleName, "peekNextMessage failed with ${e.message.toString()}")
+        } catch (exception: Exception) {
+            logger.e("$tag.MessagesListeningThread", "peekNextMessage", exception)
             disruptAction.invoke()
         }
     }

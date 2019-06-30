@@ -1,5 +1,7 @@
 package com.kaspresky.test_server.log
 
+import java.lang.Exception
+
 /**
  * Presents logs in next form:
  * INFO:_____tag=ConnectionMaker_________________________method=connect()_______________________________message => start
@@ -30,19 +32,19 @@ internal class LoggerSystemImpl : Logger {
         System.out.println("DEBUG:____${getLongMessage(tag, method, text)}")
     }
 
-    override fun e(tag: String, text: String) {
-        System.out.println("ERROR:____${getShortMessage(tag, text)}")
+    override fun e(tag: String, exception: Exception) {
+        System.out.println("ERROR:____${getShortMessage(tag, exception)}")
     }
 
-    override fun e(tag: String, method: String, text: String) {
-        System.out.println("ERROR:____${getLongMessage(tag, method, text)}")
+    override fun e(tag: String, method: String, exception: Exception) {
+        System.out.println("ERROR:____${getLongMessage(tag, method, exception)}")
     }
 
-    private fun getShortMessage(tag: String, text: String): String =
-        "$TAG${getFieldString(tag)}$MESSAGE$text"
+    private fun getShortMessage(tag: String, message: Any): String =
+        "$TAG${getFieldString(tag)}$MESSAGE$message"
 
-    private fun getLongMessage(tag: String, method: String, text: String) =
-        "$TAG${getFieldString(tag)}$METHOD${getFieldString(method)}$MESSAGE$text"
+    private fun getLongMessage(tag: String, method: String, message: Any) =
+        "$TAG${getFieldString(tag)}$METHOD${getFieldString(method)}$MESSAGE$message"
 
     private fun getFieldString(text: String): String {
         if (text.length > COMMON_FIELD_LENGTH) {

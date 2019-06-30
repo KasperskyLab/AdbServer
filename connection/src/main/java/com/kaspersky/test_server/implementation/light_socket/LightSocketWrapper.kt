@@ -4,7 +4,9 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-// todo comments
+/**
+ * Wrap of a Socket to restrict possibilities to interact with the Socket
+ */
 internal interface LightSocketWrapper {
 
     @Throws(IOException::class)

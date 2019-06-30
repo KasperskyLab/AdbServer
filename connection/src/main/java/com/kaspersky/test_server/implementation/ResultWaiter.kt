@@ -14,12 +14,9 @@ internal class ResultWaiter<Result> {
         waitLatch.countDown()
     }
 
+    @Throws(InterruptedException::class)
     fun waitResult(timeout: Long, unit: TimeUnit): Result? {
-        try {
-            waitLatch.await(timeout, unit)
-        } catch (ignored: InterruptedException) {
-            // todo correct handle this
-        }
+        waitLatch.await(timeout, unit)
         return result
     }
 

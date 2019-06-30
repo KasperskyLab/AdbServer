@@ -1,8 +1,8 @@
 package com.kaspersky.test_server.api
 
-// todo think about
-// todo 1. @Throws(IOException::class) for methods
-// todo 2. comments
+/**
+ * Interface for common Connection
+ */
 interface BaseConnection {
 
     fun connect()

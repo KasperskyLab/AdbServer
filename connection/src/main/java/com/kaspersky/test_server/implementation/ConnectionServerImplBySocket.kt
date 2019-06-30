@@ -11,28 +11,26 @@ import com.kaspresky.test_server.log.Logger
 import java.net.Socket
 import java.util.concurrent.Executors
 
-// todo logs, comments
 internal class ConnectionServerImplBySocket(
     private val socketCreation: () -> Socket,
     private val adbCommandExecutor: AdbCommandExecutor,
     private val logger: Logger
 ) : ConnectionServer {
 
+    private val tag = javaClass.simpleName
     private lateinit var socket: Socket
     private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>>
     // todo change cache pool
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
-    // todo think about @Synchronized
-    @Synchronized
     override fun connect() {
-        logger.i(javaClass.simpleName, "connect() start")
+        logger.i(tag, "connect", "start")
         connectionMaker.connect {
             socket = socketCreation.invoke()
             handleMessages()
         }
-        logger.i(javaClass.simpleName, "connect() completed")
+        logger.i(tag, "connect", "completed")
     }
 
     private fun handleMessages() {
@@ -42,26 +40,24 @@ internal class ConnectionServerImplBySocket(
             disruptAction = { disconnect() }
         )
         socketMessagesTransferring.startListening { taskMessage ->
-            logger.i(javaClass.simpleName, "handleMessages() received taskMessage=$taskMessage")
+            logger.i(tag, "handleMessages", "received taskMessage=$taskMessage")
             backgroundExecutor.execute {
                 val result = adbCommandExecutor.execute(taskMessage.command)
+                logger.i(tag, "handleMessages.backgroundExecutor", "result of taskMessage=$taskMessage => result=$result")
                 socketMessagesTransferring.sendMessage(
                     ResultMessage(taskMessage.command, result)
                 )
             }
         }
     }
-
-    // todo think about @Synchronized
-    // todo throw up an event of disconnecting to restart socket-connection
-    @Synchronized
+    
     override fun disconnect() {
-        logger.i(javaClass.simpleName, "disconnect() start")
+        logger.i(tag, "disconnect", "start")
         connectionMaker.disconnect {
             socketMessagesTransferring.stopListening()
             socket.close()
         }
-        logger.i(javaClass.simpleName, "disconnect() completed")
+        logger.i(tag, "disconnect", "completed")
     }
 
     override fun isConnected(): Boolean =

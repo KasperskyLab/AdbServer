@@ -22,20 +22,19 @@ internal class ConnectionClientImplBySocket(
         private val COMMAND_TIMEOUT_MIN = TimeUnit.MINUTES.toSeconds(3)
     }
 
+    private val tag = javaClass.simpleName
     private lateinit var socket: Socket
     private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
     private val commandsInProgress = ConcurrentHashMap<AdbCommand, ResultWaiter<ResultMessage<CommandResult>>>()
 
-    // todo think about @Synchronized
-    @Synchronized
     override fun connect() {
-        logger.i(javaClass.simpleName, "connect() start")
+        logger.i(tag, "connect", "start")
         connectionMaker.connect {
             socket = socketCreation.invoke()
             handleMessages()
         }
-        logger.i(javaClass.simpleName, "connect() completed")
+        logger.i(tag, "connect", "completed")
     }
 
     private fun handleMessages() {
@@ -45,43 +44,67 @@ internal class ConnectionClientImplBySocket(
             disruptAction = { disconnect() }
         )
         socketMessagesTransferring.startListening { resultMessage ->
-            // todo log in common and in a case when command is not in the map
-            logger.i(javaClass.simpleName, "handleMessages() received resultMessage=$resultMessage")
+            logger.i(tag, "handleMessages", "received resultMessage=$resultMessage")
             commandsInProgress[resultMessage.command]?.latchResult(resultMessage)
         }
     }
 
-    // todo think about @Synchronized
-    @Synchronized
     override fun disconnect() {
-        logger.i(javaClass.simpleName, "disconnect() start")
+        logger.i(tag, "disconnect", "start")
         connectionMaker.disconnect {
             socketMessagesTransferring.stopListening()
             socket.close()
-            // todo cleaning a line of requests
+            resetCommandsInProgress()
         }
-        logger.i(javaClass.simpleName, "disconnect() completed")
+        logger.i(tag, "disconnect", "completed")
+    }
+
+    private fun resetCommandsInProgress() {
+        for ((adbCommand, resultWaiter) in commandsInProgress) {
+            val commandResult = CommandResult(ExecutorResultStatus.FAILED, "disconnect was called")
+            logger.i(tag, "resetCommandsInProgress", "command=$adbCommand was failed because of disconnecting. " +
+                    "result=$commandResult"
+            )
+            resultWaiter.latchResult(
+                ResultMessage(adbCommand, commandResult)
+            )
+        }
+        commandsInProgress.clear()
     }
 
     override fun isConnected(): Boolean =
         connectionMaker.isConnected()
 
     override fun executeAdbCommand(command: AdbCommand): CommandResult {
-        // todo put commands in stack to wait Server correctly and unlock other ResultWaiter
-        logger.i(javaClass.simpleName, "executeAdbCommand(command=$command) started")
+        logger.i(tag, "executeAdbCommand", "started command=$command")
+
         val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()
-        // todo check a correctness of string value is like a key value in map
         commandsInProgress[command] = resultWaiter
         socketMessagesTransferring.sendMessage(
             TaskMessage(command)
         )
-        val resultMessage = resultWaiter.waitResult(COMMAND_TIMEOUT_MIN, TimeUnit.SECONDS)
-        commandsInProgress.remove(command)
-        // todo output a log of resultMessage
-        // todo add description of failed status
-        val commandResult = resultMessage?.data ?: CommandResult(ExecutorResultStatus.FAILED, "")
-        logger.i(javaClass.simpleName, "executeAdbCommand(command=$command) completed with commandResult=$commandResult")
-        return commandResult
+
+        val resultMessage: ResultMessage<CommandResult>?
+        try {
+            resultMessage = resultWaiter.waitResult(COMMAND_TIMEOUT_MIN, TimeUnit.SECONDS)
+        } catch (exception: InterruptedException) {
+            val failedCommandResult = CommandResult(ExecutorResultStatus.FAILED, "Waiting thread was interrupted")
+            logger.i(tag, "executeAdbCommand","command=$command failed with commandResult=$failedCommandResult")
+            // todo think about it
+            //Thread.currentThread().interrupt()
+            return failedCommandResult
+        } finally {
+            commandsInProgress.remove(command)
+        }
+
+        if (resultMessage == null) {
+            val failedCommandResult = CommandResult(ExecutorResultStatus.FAILED, "Waiting result timeout was expired")
+            logger.i(tag, "executeAdbCommand","command=$command failed with commandResult=$failedCommandResult")
+            return failedCommandResult
+        }
+        logger.i(tag, "executeAdbCommand","command=$command completed with commandResult=${resultMessage.data}")
+
+        return resultMessage.data
     }
 
 }
