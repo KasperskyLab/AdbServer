@@ -6,7 +6,6 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
-// todo logging, comments
 internal class SocketMessagesTransferring<ReceiveModel, SendModel> private constructor(
     private val lightSocketWrapper: LightSocketWrapper,
     private val receiveModelClass: Class<ReceiveModel>,
@@ -84,12 +83,10 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
         val obj: Any
         try {
             obj = inputStream.readObject()
-            // todo check this
             if (obj.javaClass == receiveModelClass) {
                 logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj")
                 messagesListener.invoke(obj as ReceiveModel)
             } else {
-                // todo exception name
                 logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj" +
                         " but this message type is not $receiveModelClass"
                 )

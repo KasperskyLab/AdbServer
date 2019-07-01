@@ -2,7 +2,6 @@ package com.kaspersky.test_server.implementation
 
 import com.kaspresky.test_server.log.Logger
 
-// todo logs, comments, exceptions
 internal class ConnectionMaker(
     private val logger: Logger
 ) {
