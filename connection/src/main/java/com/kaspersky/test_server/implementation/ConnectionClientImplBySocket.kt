@@ -28,20 +28,23 @@ internal class ConnectionClientImplBySocket(
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
     private val commandsInProgress = ConcurrentHashMap<AdbCommand, ResultWaiter<ResultMessage<CommandResult>>>()
 
-    override fun connect() {
-        logger.i(tag, "connect", "start")
+    override fun tryConnect() {
+        logger.i(tag, "tryConnect", "start")
         connectionMaker.connect {
             socket = socketCreation.invoke()
+        }
+        logger.i(tag, "tryConnect", "attempt completed")
+        if (isConnected()) {
+            logger.i(tag, "tryConnect", "start handleMessages")
             handleMessages()
         }
-        logger.i(tag, "connect", "completed")
     }
 
     private fun handleMessages() {
         socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
             lightSocketWrapper = LightSocketWrapperImpl(socket),
             logger = logger,
-            disruptAction = { disconnect() }
+            disruptAction = { tryDisconnect() }
         )
         socketMessagesTransferring.startListening { resultMessage ->
             logger.i(tag, "handleMessages", "received resultMessage=$resultMessage")
@@ -49,19 +52,19 @@ internal class ConnectionClientImplBySocket(
         }
     }
 
-    override fun disconnect() {
-        logger.i(tag, "disconnect", "start")
+    override fun tryDisconnect() {
+        logger.i(tag, "tryDisconnect", "start")
         connectionMaker.disconnect {
             socketMessagesTransferring.stopListening()
             socket.close()
             resetCommandsInProgress()
         }
-        logger.i(tag, "disconnect", "completed")
+        logger.i(tag, "tryDisconnect", "attempt completed")
     }
 
     private fun resetCommandsInProgress() {
         for ((adbCommand, resultWaiter) in commandsInProgress) {
-            val commandResult = CommandResult(ExecutorResultStatus.FAILED, "disconnect was called")
+            val commandResult = CommandResult(ExecutorResultStatus.FAILED, "tryDisconnect was called")
             logger.i(tag, "resetCommandsInProgress", "command=$adbCommand was failed because of disconnecting. " +
                     "result=$commandResult"
             )

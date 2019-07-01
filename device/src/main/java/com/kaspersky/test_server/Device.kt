@@ -2,9 +2,8 @@ package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.*
 import com.kaspresky.test_server.log.Logger
-import com.kaspresky.test_server.log.LoggerFactory
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Device private constructor(
     private val connectionClient: ConnectionClient,
@@ -28,7 +27,7 @@ internal class Device private constructor(
     }
 
     private val tag = javaClass.simpleName
-    private val isRunning = AtomicReference<Boolean>()
+    private val isRunning = AtomicBoolean(false)
 
     fun startConnectionToDesktop() {
         if (isRunning.compareAndSet(false, true)) {
@@ -40,7 +39,7 @@ internal class Device private constructor(
     fun stopConnectionToDesktop() {
         if (isRunning.compareAndSet(true, false)) {
             logger.i(tag, "stop", "stop")
-            connectionClient.disconnect()
+            connectionClient.tryDisconnect()
         }
     }
 
@@ -90,7 +89,7 @@ internal class Device private constructor(
                 if (!connectionClient.isConnected()) {
                     try {
                         logger.i("$tag.WatchdogThread", "run", "Try to connect to Desktop...")
-                        connectionClient.connect()
+                        connectionClient.tryConnect()
                     } catch (exception: Exception) {
                         logger.i("$tag.WatchdogThread", "run", "The attempt to connect to Desktop was with exception: $exception")
                     }

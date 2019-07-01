@@ -47,7 +47,7 @@ internal class DeviceMirror private constructor(
     fun stopConnectionToDevice() {
         logger.i(tag, "stopConnectionToDevice", "connection to device=$deviceName was stopped")
         isRunning.set(false)
-        connectionServer.disconnect()
+        connectionServer.tryDisconnect()
     }
 
     private inner class WatchdogThread : Thread() {
@@ -57,7 +57,7 @@ internal class DeviceMirror private constructor(
                 if (!connectionServer.isConnected()) {
                     try {
                         logger.i("$tag.WatchdogThread", "run", "Try to connect to Device=$deviceName...")
-                        connectionServer.connect()
+                        connectionServer.tryConnect()
                     } catch (exception: Exception) {
                         logger.i("$tag.WatchdogThread", "run", "The attempt to connect to Device=$deviceName was with exception: $exception")
                     }

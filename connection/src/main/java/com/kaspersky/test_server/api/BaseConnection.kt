@@ -5,9 +5,9 @@ package com.kaspersky.test_server.api
  */
 interface BaseConnection {
 
-    fun connect()
+    fun tryConnect()
 
-    fun disconnect()
+    fun tryDisconnect()
 
     fun isConnected(): Boolean
 

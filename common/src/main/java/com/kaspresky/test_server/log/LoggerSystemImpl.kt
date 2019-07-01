@@ -48,7 +48,7 @@ internal class LoggerSystemImpl : Logger {
 
     private fun getFieldString(text: String): String {
         if (text.length > COMMON_FIELD_LENGTH) {
-            return text
+            return text + "_"
         }
         return text + "_".repeat(COMMON_FIELD_LENGTH - text.length)
     }

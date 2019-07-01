@@ -24,20 +24,23 @@ internal class ConnectionServerImplBySocket(
     // todo change cache pool
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
-    override fun connect() {
-        logger.i(tag, "connect", "start")
+    override fun tryConnect() {
+        logger.i(tag, "tryConnect", "start")
         connectionMaker.connect {
             socket = socketCreation.invoke()
+        }
+        logger.i(tag, "tryConnect", "attempt completed")
+        if (isConnected()) {
+            logger.i(tag, "tryConnect", "start handleMessages")
             handleMessages()
         }
-        logger.i(tag, "connect", "completed")
     }
 
     private fun handleMessages() {
         socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
             lightSocketWrapper = LightSocketWrapperImpl(socket),
             logger = logger,
-            disruptAction = { disconnect() }
+            disruptAction = { tryDisconnect() }
         )
         socketMessagesTransferring.startListening { taskMessage ->
             logger.i(tag, "handleMessages", "received taskMessage=$taskMessage")
@@ -51,13 +54,13 @@ internal class ConnectionServerImplBySocket(
         }
     }
     
-    override fun disconnect() {
-        logger.i(tag, "disconnect", "start")
+    override fun tryDisconnect() {
+        logger.i(tag, "tryDisconnect", "start")
         connectionMaker.disconnect {
             socketMessagesTransferring.stopListening()
             socket.close()
         }
-        logger.i(tag, "disconnect", "completed")
+        logger.i(tag, "tryDisconnect", "attempt completed")
     }
 
     override fun isConnected(): Boolean =
