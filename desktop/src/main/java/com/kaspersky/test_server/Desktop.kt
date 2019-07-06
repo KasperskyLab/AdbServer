@@ -56,20 +56,14 @@ internal class Desktop(
             CmdCommand("adb devices"), logger
         )
         if (commandResult.status != ExecutorResultStatus.SUCCESS) {
-            return Collections.emptyList()
+            return emptyList()
         }
         val commandResultDescription: String = commandResult.description
         return commandResultDescription.lines()
             .asSequence()
-            .map {
-                val matcher = pattern.matcher(it)
-                return@map if (matcher.find()) {
-                    matcher.group(1)
-                } else {
-                    null
-                }
-            }
-            .filterNotNull()
+            .map { pattern.matcher(it) }
+            .filter { matcher -> matcher.find() }
+            .map { matcher -> matcher.group(1) }
             .toList()
     }
 

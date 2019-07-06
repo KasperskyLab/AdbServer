@@ -18,16 +18,21 @@ internal class ConnectionServerImplBySocket(
 ) : ConnectionServer {
 
     private val tag = javaClass.simpleName
-    private lateinit var socket: Socket
+
     private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>>
-    // todo change cache pool
+
+    private var _socket: Socket? = null
+    private val socket: Socket
+        get() =_socket ?: throw IllegalStateException("tryConnect must be called first")
+
+    // todo replace newCachedThreadPool
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
     override fun tryConnect() {
         logger.i(tag, "tryConnect", "start")
         connectionMaker.connect {
-            socket = socketCreation.invoke()
+            _socket = socketCreation.invoke()
         }
         logger.i(tag, "tryConnect", "attempt completed")
         if (isConnected()) {

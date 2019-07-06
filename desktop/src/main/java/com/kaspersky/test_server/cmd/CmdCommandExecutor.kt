@@ -15,15 +15,13 @@ internal class CmdCommandExecutor {
         val process = Runtime.getRuntime().exec(command.body)
         if (process.waitFor(EXECUTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             val exitCode = process.exitValue()
-            val commandResult: CommandResult
-            commandResult = if (exitCode != 0) {
+            return if (exitCode != 0) {
                 val error = "exitCode=$exitCode, message=${process.errorStream.bufferedReader().readText()}"
                 CommandResult(ExecutorResultStatus.FAILED, error)
             } else {
                 val success = "exitCode=$exitCode, message=${process.inputStream.bufferedReader().readText()}"
                 CommandResult(ExecutorResultStatus.SUCCESS, success)
             }
-            return commandResult
         }
         try {
             return CommandResult(
