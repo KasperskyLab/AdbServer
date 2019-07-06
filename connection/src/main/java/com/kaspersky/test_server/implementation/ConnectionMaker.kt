@@ -11,7 +11,7 @@ internal class ConnectionMaker(
     private var connectionState: ConnectionState = ConnectionState.DISCONNECTED
 
     @Synchronized
-    fun connect(connectAction: () -> Unit) {
+    fun connect(connectAction: () -> Unit, successConnectAction: () -> Unit) {
         logger.i(tag, "connect", "start")
         logger.i(tag, "connect", "current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
@@ -26,6 +26,7 @@ internal class ConnectionMaker(
             connectAction.invoke()
             connectionState = ConnectionState.CONNECTED
             logger.i(tag, "connect", "updated state=$connectionState")
+            successConnectAction.invoke()
         } catch (exception: Exception) {
             logger.e(tag, "connect", exception)
             connectionState = ConnectionState.DISCONNECTED

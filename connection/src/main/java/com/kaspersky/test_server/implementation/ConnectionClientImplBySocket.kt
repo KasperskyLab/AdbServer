@@ -30,14 +30,14 @@ internal class ConnectionClientImplBySocket(
 
     override fun tryConnect() {
         logger.i(tag, "tryConnect", "start")
-        connectionMaker.connect {
-            socket = socketCreation.invoke()
-        }
+        connectionMaker.connect(
+            connectAction = { socket = socketCreation.invoke() },
+            successConnectAction = {
+                logger.i(tag, "tryConnect", "start handleMessages")
+                handleMessages()
+            }
+        )
         logger.i(tag, "tryConnect", "attempt completed")
-        if (isConnected()) {
-            logger.i(tag, "tryConnect", "start handleMessages")
-            handleMessages()
-        }
     }
 
     private fun handleMessages() {
