@@ -1,11 +1,6 @@
-include ':test_server_contract',
-        ':desktop',
+include ':desktop',
         ':desktop_device_connection',
         ':device',
         ':example',
         ':connection',
-        ':test_server_command_handler',
-        ':test_server_desktop',
-        ':test_server_mobile',
-        ':hostconnectionexample',
         ':common'
