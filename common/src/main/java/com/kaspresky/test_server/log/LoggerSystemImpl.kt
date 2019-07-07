@@ -33,11 +33,11 @@ internal class LoggerSystemImpl : Logger {
     }
 
     override fun e(tag: String, exception: Exception) {
-        System.out.println("ERROR:____${getShortMessage(tag, exception)}")
+        System.err.println("ERROR:____${getShortMessage(tag, exception)}")
     }
 
     override fun e(tag: String, method: String, exception: Exception) {
-        System.out.println("ERROR:____${getLongMessage(tag, method, exception)}")
+        System.err.println("ERROR:____${getLongMessage(tag, method, exception)}")
     }
 
     private fun getShortMessage(tag: String, message: Any): String =
