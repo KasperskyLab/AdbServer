@@ -20,7 +20,7 @@ private const val MIN_PORT_VALUE = 9000
 
 private val deviceClients: MutableCollection<DeviceClient> = mutableListOf()
 private val lastDevicePort = AtomicInteger(MIN_PORT_VALUE)
-private var debugMode = false
+private var debugMode = true
 
 private fun log(message: String) {
     System.out.println("[${Calendar.getInstance().time}] $message")
