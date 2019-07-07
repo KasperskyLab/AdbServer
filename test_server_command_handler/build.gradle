@@ -1,0 +1,35 @@
+apply plugin: 'kotlin'
+apply plugin: 'maven'
+
+group = 'com.kaspersky.components'
+version = "$pTestServerMajor.$pTestServerMinor.$pTestServerBuild"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+
+if (pPublish.toBoolean()) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: uri('')) {
+                    
+                }
+                pom.groupId = 'com.kaspersky.components'
+                pom.artifactId = ''
+                pom.version = ""
+            }
+        }
+    }
+    uploadArchives.dependsOn assemble
+} else {
+    Task uploadArchives
+}
+repositories {
+    mavenCentral()
+}
