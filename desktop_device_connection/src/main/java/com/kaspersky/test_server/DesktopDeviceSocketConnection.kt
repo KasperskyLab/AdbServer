@@ -1,6 +1,6 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.api.AdbCommandExecutor
+import com.kaspersky.test_server.api.CommandExecutor
 import java.net.Socket
 
 /**
@@ -12,7 +12,7 @@ import java.net.Socket
  */
 interface DesktopDeviceSocketConnection {
 
-    fun getDesktopSocketLoad(executor: AdbCommandExecutor): () -> Socket
+    fun getDesktopSocketLoad(executor: CommandExecutor): () -> Socket
 
     fun getDeviceSocketLoad(): () -> Socket
 

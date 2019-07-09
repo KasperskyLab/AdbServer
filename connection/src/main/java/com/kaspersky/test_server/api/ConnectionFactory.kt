@@ -9,10 +9,10 @@ object ConnectionFactory {
 
     fun createServer(
         socketCreation: () -> Socket,
-        adbCommandExecutor: AdbCommandExecutor,
+        commandExecutor: CommandExecutor,
         logger: Logger
     ): ConnectionServer =
-            ConnectionServerImplBySocket(socketCreation, adbCommandExecutor, logger)
+            ConnectionServerImplBySocket(socketCreation, commandExecutor, logger)
 
     fun createClient(
         socketCreation: () -> Socket,

@@ -21,11 +21,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        AdbServer.connect()
+        AdbTerminal.connect()
     }
 
     override fun onPause() {
-        AdbServer.disconnect()
+        AdbTerminal.disconnect()
         super.onPause()
     }
 
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         val command = editTextAdb.text.toString()
         if (command.isNotEmpty()) {
             executor.execute {
-                val result = kotlin.runCatching { AdbServer.execute(command) }
+                val result = kotlin.runCatching { AdbTerminal.executeAdb(command) }
                 runOnUiThread {
                     Toast.makeText(this, result.toString(), Toast.LENGTH_SHORT).show()
                 }

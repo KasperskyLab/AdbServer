@@ -5,6 +5,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(":common")
+    implementation project(":command_types")
     implementation project(":connection")
     implementation project(":desktop_device_connection")
 }

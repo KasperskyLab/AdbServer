@@ -9,6 +9,6 @@ interface ConnectionClient : BaseConnection {
      * It is synchronous method to not reorder a line of adb commands
      * because if adb commands were completed in incorrect order it may to lead inconsistent state of the app and the device
      */
-    fun executeAdbCommand(command: AdbCommand): CommandResult
+    fun executeCommand(command: Command): CommandResult
 
 }

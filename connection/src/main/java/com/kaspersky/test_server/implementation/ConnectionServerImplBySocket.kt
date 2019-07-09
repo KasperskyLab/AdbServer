@@ -1,6 +1,6 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspersky.test_server.api.AdbCommandExecutor
+import com.kaspersky.test_server.api.CommandExecutor
 import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspersky.test_server.api.CommandResult
 import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
 
 internal class ConnectionServerImplBySocket(
     private val socketCreation: () -> Socket,
-    private val adbCommandExecutor: AdbCommandExecutor,
+    private val adbCommandExecutor: CommandExecutor,
     private val logger: Logger
 ) : ConnectionServer {
 

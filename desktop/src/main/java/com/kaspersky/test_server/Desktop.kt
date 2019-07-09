@@ -1,14 +1,11 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.ExecutorResultStatus
-import com.kaspersky.test_server.cmd.CmdCommand
-import com.kaspersky.test_server.cmd.CmdCommandExecutor
 import com.kaspresky.test_server.log.Logger
-import java.util.*
 import java.util.regex.Pattern
 
 internal class Desktop(
-    private val cmdCommandExecutor: CmdCommandExecutor,
+    private val cmdCommandPerformer: CmdCommandPerformer,
     private val logger: Logger
 ) {
 
@@ -27,7 +24,7 @@ internal class Desktop(
                         "New device has been found: $deviceName. Initialize connection to it..."
                     )
                     val deviceMirror = DeviceMirror.create(
-                        deviceName, cmdCommandExecutor, logger
+                        deviceName, cmdCommandPerformer, logger
                     )
                     deviceMirror.startConnectionToDevice()
                     devices += deviceMirror
@@ -52,9 +49,7 @@ internal class Desktop(
 
     private fun getAttachedDevicesByAdb(): List<String> {
         val pattern = Pattern.compile("^([a-zA-Z0-9\\-:.]+)(\\s+)(device)")
-        val commandResult = cmdCommandExecutor.execute(
-            CmdCommand("adb devices"), logger
-        )
+        val commandResult = cmdCommandPerformer.perform("adb devices")
         if (commandResult.status != ExecutorResultStatus.SUCCESS) {
             return emptyList()
         }

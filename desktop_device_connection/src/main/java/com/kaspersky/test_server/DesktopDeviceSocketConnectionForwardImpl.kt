@@ -1,7 +1,6 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.api.AdbCommand
-import com.kaspersky.test_server.api.AdbCommandExecutor
+import com.kaspersky.test_server.api.CommandExecutor
 import com.kaspresky.test_server.log.Logger
 import java.net.ServerSocket
 import java.net.Socket
@@ -21,7 +20,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
     private val tag = javaClass.simpleName
     private val serverSocket by lazy { ServerSocket(DEVICE_PORT) }
 
-    override fun getDesktopSocketLoad(executor: AdbCommandExecutor): () -> Socket {
+    override fun getDesktopSocketLoad(executor: CommandExecutor): () -> Socket {
         val clientPort = getFreePort()
         logger.i(tag, "getDesktopSocketLoad", "calculated desktop client port=$clientPort")
         forwardPorts(executor, clientPort, DEVICE_PORT)
@@ -38,7 +37,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
         return LAST_CLIENT_PORT.incrementAndGet()
     }
 
-    private fun forwardPorts(executor: AdbCommandExecutor, fromPort: Int, toPort: Int) {
+    private fun forwardPorts(executor: CommandExecutor, fromPort: Int, toPort: Int) {
         logger.i(tag, "forwardPorts(fromPort=$fromPort, toPort=$toPort)", "started")
         val result = executor.execute(AdbCommand("forward tcp:$fromPort tcp:$toPort"))
         logger.i(tag, "forwardPorts(fromPort=$fromPort, toPort=$toPort)", "result=$result")

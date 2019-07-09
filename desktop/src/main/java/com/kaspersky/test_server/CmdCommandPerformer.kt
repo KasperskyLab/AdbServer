@@ -1,18 +1,17 @@
-package com.kaspersky.test_server.cmd
+package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.CommandResult
 import com.kaspersky.test_server.api.ExecutorResultStatus
-import com.kaspresky.test_server.log.Logger
 import java.util.concurrent.TimeUnit
 
-internal class CmdCommandExecutor {
+internal class CmdCommandPerformer {
 
     companion object {
         private const val EXECUTION_TIMEOUT_SECONDS = 2 * 60L
     }
 
-    fun execute(command: CmdCommand, logger: Logger): CommandResult {
-        val process = Runtime.getRuntime().exec(command.body)
+    fun perform(command: String): CommandResult {
+        val process = Runtime.getRuntime().exec(command)
         if (process.waitFor(EXECUTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             val exitCode = process.exitValue()
             return if (exitCode != 0) {

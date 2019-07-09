@@ -1,7 +1,6 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.*
-import com.kaspersky.test_server.cmd.CmdCommandExecutor
 import com.kaspresky.test_server.log.Logger
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicReference
@@ -15,7 +14,7 @@ internal class DeviceMirror private constructor(
     companion object {
         fun create(
             deviceName: String,
-            cmdCommandExecutor: CmdCommandExecutor,
+            cmdCommandPerformer: CmdCommandPerformer,
             logger: Logger
         ): DeviceMirror {
             val desktopDeviceSocketConnection =
@@ -23,12 +22,12 @@ internal class DeviceMirror private constructor(
                     DesktopDeviceSocketConnectionType.FORWARD,
                     logger
                 )
-            val adbCommandExecutor = AdbCommandExecutorImpl(
-                cmdCommandExecutor, deviceName, logger
+            val commandExecutor = CommandExecutorImpl(
+                cmdCommandPerformer, deviceName
             )
             val connectionServer = ConnectionFactory.createServer(
-                desktopDeviceSocketConnection.getDesktopSocketLoad(adbCommandExecutor),
-                adbCommandExecutor,
+                desktopDeviceSocketConnection.getDesktopSocketLoad(commandExecutor),
+                commandExecutor,
                 logger
             )
             return DeviceMirror(deviceName, connectionServer, logger)

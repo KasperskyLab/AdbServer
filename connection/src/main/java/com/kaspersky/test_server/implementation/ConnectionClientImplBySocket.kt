@@ -1,9 +1,6 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspersky.test_server.api.AdbCommand
-import com.kaspersky.test_server.api.ConnectionClient
-import com.kaspersky.test_server.api.CommandResult
-import com.kaspersky.test_server.api.ExecutorResultStatus
+import com.kaspersky.test_server.api.*
 import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -26,7 +23,7 @@ internal class ConnectionClientImplBySocket(
     private lateinit var socket: Socket
     private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
-    private val commandsInProgress = ConcurrentHashMap<AdbCommand, ResultWaiter<ResultMessage<CommandResult>>>()
+    private val commandsInProgress = ConcurrentHashMap<Command, ResultWaiter<ResultMessage<CommandResult>>>()
 
     override fun tryConnect() {
         logger.i(tag, "tryConnect", "start")
@@ -78,7 +75,7 @@ internal class ConnectionClientImplBySocket(
     override fun isConnected(): Boolean =
         connectionMaker.isConnected()
 
-    override fun executeAdbCommand(command: AdbCommand): CommandResult {
+    override fun executeCommand(command: Command): CommandResult {
         logger.i(tag, "executeAdbCommand", "started command=$command")
 
         val resultWaiter = ResultWaiter<ResultMessage<CommandResult>>()

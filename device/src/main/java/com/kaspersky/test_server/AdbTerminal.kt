@@ -2,7 +2,7 @@ package com.kaspersky.test_server
 
 import com.kaspresky.test_server.log.LoggerFactory
 
-object AdbServer {
+object AdbTerminal {
 
     private val device = Device.create(
         LoggerFactory.systemLogger()
@@ -16,6 +16,8 @@ object AdbServer {
         device.stopConnectionToDesktop()
     }
 
-    fun execute(command: String): String = device.execute(command)
+    fun executeAdb(command: String): String = device.fulfill(AdbCommand(command))
+
+    fun executeCmd(command: String): String = device.fulfill(CmdCommand(command))
 
 }
