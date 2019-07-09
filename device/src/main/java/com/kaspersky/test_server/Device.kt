@@ -50,7 +50,7 @@ internal class Device private constructor(
      * 1. a waiting time of the connection establishment (if it has not been yet)
      * 2. the adb command execution time
      */
-    fun fulfill(command: Command): String {
+    fun fulfill(command: Command): CommandResult {
         logger.i(tag, "execute", "Start to execute the command=$command")
         val commandResult = try {
             awaitConnectionEstablished(CONNECTION_ESTABLISH_TIMEOUT_SEC, TimeUnit.SECONDS)
@@ -62,7 +62,7 @@ internal class Device private constructor(
             )
         }
         logger.i(tag, "execute", "The result of command=$command => $commandResult")
-        return commandResult.toString()
+        return commandResult
     }
 
     @Throws(ConnectionTimeException::class)

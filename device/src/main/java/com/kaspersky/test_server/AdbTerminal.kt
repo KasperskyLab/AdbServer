@@ -1,5 +1,6 @@
 package com.kaspersky.test_server
 
+import com.kaspersky.test_server.api.CommandResult
 import com.kaspresky.test_server.log.LoggerFactory
 
 object AdbTerminal {
@@ -16,8 +17,8 @@ object AdbTerminal {
         device.stopConnectionToDesktop()
     }
 
-    fun executeAdb(command: String): String = device.fulfill(AdbCommand(command))
+    fun executeAdb(command: String): CommandResult = device.fulfill(AdbCommand(command))
 
-    fun executeCmd(command: String): String = device.fulfill(CmdCommand(command))
+    fun executeCmd(command: String): CommandResult = device.fulfill(CmdCommand(command))
 
 }
