@@ -10,7 +10,7 @@ dependencies {
     implementation project(":desktop_device_connection")
 }
 
-mainClassName = "com.kaspersky.test_server.Main.kt"
+mainClassName = "com.kaspersky.test_server.MainKt"
 
 repositories {
     mavenCentral()
