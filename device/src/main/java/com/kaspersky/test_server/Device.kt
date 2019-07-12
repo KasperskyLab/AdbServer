@@ -85,7 +85,7 @@ internal class Device private constructor(
     private inner class WatchdogThread : Thread("Connection watchdog thread from Device to Desktop") {
         override fun run() {
             logger.i("$tag.WatchdogThread","run", "WatchdogThread starts from Device to Desktop")
-            while (isRunning.get() == true) {
+            while (isRunning.get()) {
                 if (!connectionClient.isConnected()) {
                     try {
                         logger.i("$tag.WatchdogThread", "run", "Try to connect to Desktop...")

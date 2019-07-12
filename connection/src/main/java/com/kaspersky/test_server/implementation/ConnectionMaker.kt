@@ -2,6 +2,9 @@ package com.kaspersky.test_server.implementation
 
 import com.kaspresky.test_server.log.Logger
 
+/**
+ * The helper to establish a connection correctly according to all possible states and multithread's environment
+ */
 internal class ConnectionMaker(
     private val logger: Logger
 ) {

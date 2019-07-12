@@ -17,8 +17,14 @@ object AdbTerminal {
         device.stopConnectionToDesktop()
     }
 
+    /**
+     * Please first of all call [connect] method to establish a connection
+     */
     fun executeAdb(command: String): CommandResult = device.fulfill(AdbCommand(command))
 
+    /**
+     * Please first of all call [connect] method to establish a connection
+     */
     fun executeCmd(command: String): CommandResult = device.fulfill(CmdCommand(command))
 
 }

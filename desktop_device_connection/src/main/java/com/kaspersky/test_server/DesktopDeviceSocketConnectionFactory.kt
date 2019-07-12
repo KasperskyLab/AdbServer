@@ -11,7 +11,7 @@ object DesktopDeviceSocketConnectionFactory {
     ): DesktopDeviceSocketConnection {
         return when(desktopDeviceSocketConnectionType) {
             FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
-            REVERSE -> throw RuntimeException("Please implement REVERSE DesktopDeviceSocketConnection")
+            REVERSE -> throw UnsupportedOperationException("Please implement REVERSE DesktopDeviceSocketConnection")
         }
     }
 

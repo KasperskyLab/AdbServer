@@ -5,6 +5,9 @@ import com.kaspersky.test_server.implementation.ConnectionServerImplBySocket
 import com.kaspresky.test_server.log.Logger
 import java.net.Socket
 
+/**
+ * The singleton to provide convenient methods to create Server and Client
+ */
 object ConnectionFactory {
 
     fun createServer(

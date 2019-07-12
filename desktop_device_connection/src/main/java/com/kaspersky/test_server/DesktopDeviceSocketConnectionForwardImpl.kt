@@ -13,8 +13,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
     companion object {
         private const val DEVICE_PORT: Int = 8500
         private const val LOCAL_HOST: String = "127.0.0.1"
-        private const val DESKTOP_MIN_PORT = 9000
-        private val LAST_CLIENT_PORT = AtomicInteger(DESKTOP_MIN_PORT)
+        private val LAST_CLIENT_PORT = AtomicInteger(9000)
     }
 
     private val tag = javaClass.simpleName

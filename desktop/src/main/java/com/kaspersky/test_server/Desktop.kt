@@ -53,8 +53,8 @@ internal class Desktop(
         if (commandResult.status != ExecutorResultStatus.SUCCESS) {
             return emptyList()
         }
-        val commandResultDescription: String = commandResult.description
-        return commandResultDescription.lines()
+        val adbDevicesCommandResult: String = commandResult.description
+        return adbDevicesCommandResult.lines()
             .asSequence()
             .map { pattern.matcher(it) }
             .filter { matcher -> matcher.find() }

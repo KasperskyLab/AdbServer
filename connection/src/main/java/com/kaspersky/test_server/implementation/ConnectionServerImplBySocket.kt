@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
 
 internal class ConnectionServerImplBySocket(
     private val socketCreation: () -> Socket,
-    private val adbCommandExecutor: CommandExecutor,
+    private val commandExecutor: CommandExecutor,
     private val logger: Logger
 ) : ConnectionServer {
 
@@ -26,7 +26,6 @@ internal class ConnectionServerImplBySocket(
     private val socket: Socket
         get() =_socket ?: throw IllegalStateException("tryConnect must be called first")
 
-    // todo replace newCachedThreadPool
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
     override fun tryConnect() {
@@ -50,7 +49,7 @@ internal class ConnectionServerImplBySocket(
         socketMessagesTransferring.startListening { taskMessage ->
             logger.i(tag, "handleMessages", "received taskMessage=$taskMessage")
             backgroundExecutor.execute {
-                val result = adbCommandExecutor.execute(taskMessage.command)
+                val result = commandExecutor.execute(taskMessage.command)
                 logger.i(tag, "handleMessages.backgroundExecutor", "result of taskMessage=$taskMessage => result=$result")
                 socketMessagesTransferring.sendMessage(
                     ResultMessage(taskMessage.command, result)

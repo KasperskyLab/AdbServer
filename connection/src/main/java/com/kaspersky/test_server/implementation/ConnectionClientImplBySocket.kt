@@ -20,15 +20,23 @@ internal class ConnectionClientImplBySocket(
     }
 
     private val tag = javaClass.simpleName
-    private lateinit var socket: Socket
+
+    private var _socket: Socket? = null
+    private val socket: Socket
+        get() = _socket ?: throw IllegalStateException("tryConnect must be called first")
+
+
+    private var _socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>? = null
+    private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
+        get() = _socketMessagesTransferring ?: throw IllegalStateException("tryConnect must be called first")
+
     private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
-    private lateinit var socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
     private val commandsInProgress = ConcurrentHashMap<Command, ResultWaiter<ResultMessage<CommandResult>>>()
 
     override fun tryConnect() {
         logger.i(tag, "tryConnect", "start")
         connectionMaker.connect(
-            connectAction = { socket = socketCreation.invoke() },
+            connectAction = { _socket = socketCreation.invoke() },
             successConnectAction = {
                 logger.i(tag, "tryConnect", "start handleMessages")
                 handleMessages()
@@ -38,7 +46,7 @@ internal class ConnectionClientImplBySocket(
     }
 
     private fun handleMessages() {
-        socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
+        _socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
             lightSocketWrapper = LightSocketWrapperImpl(socket),
             logger = logger,
             disruptAction = { tryDisconnect() }
@@ -90,8 +98,6 @@ internal class ConnectionClientImplBySocket(
         } catch (exception: InterruptedException) {
             val failedCommandResult = CommandResult(ExecutorResultStatus.FAILED, "Waiting thread was interrupted")
             logger.i(tag, "executeAdbCommand","command=$command failed with commandResult=$failedCommandResult")
-            // todo think about it
-            //Thread.currentThread().interrupt()
             return failedCommandResult
         } finally {
             commandsInProgress.remove(command)

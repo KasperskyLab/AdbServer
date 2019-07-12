@@ -5,7 +5,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Wrap of a Socket to restrict possibilities to interact with the Socket
+ * Wrap of a Socket to restrict possibilities to interact with the Socket directly
  */
 internal interface LightSocketWrapper {
 

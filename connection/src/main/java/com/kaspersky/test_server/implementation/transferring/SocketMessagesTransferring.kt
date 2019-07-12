@@ -31,9 +31,11 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     }
 
     private val tag = javaClass.simpleName
+
     private lateinit var inputStream: ObjectInputStream
     private lateinit var outputStream: ObjectOutputStream
     private lateinit var messagesListener: (ReceiveModel) -> Unit
+
     private val isRunning: AtomicBoolean = AtomicBoolean(false)
 
     fun startListening(listener: (ReceiveModel) -> Unit) {

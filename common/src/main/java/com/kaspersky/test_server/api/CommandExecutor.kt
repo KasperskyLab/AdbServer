@@ -5,6 +5,10 @@ package com.kaspersky.test_server.api
  */
 interface CommandExecutor {
 
+    /**
+     * It's a synchronous method to keep order of commands' executing.
+     * Otherwise the result may be unpredictable.
+     */
     fun execute(command: Command): CommandResult
 
 }

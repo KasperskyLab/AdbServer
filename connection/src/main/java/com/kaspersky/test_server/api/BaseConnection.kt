@@ -5,10 +5,20 @@ package com.kaspersky.test_server.api
  */
 interface BaseConnection {
 
+    /**
+     * Try to connect.
+     * The connection must be established by this method before any other operations
+     */
     fun tryConnect()
 
+    /**
+     * If the connection is not needed then call this method to close all channels
+     */
     fun tryDisconnect()
 
+    /**
+     * Return status of the connection
+     */
     fun isConnected(): Boolean
 
 }
