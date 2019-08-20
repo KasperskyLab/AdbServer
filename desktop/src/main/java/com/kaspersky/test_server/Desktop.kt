@@ -6,6 +6,8 @@ import java.util.regex.Pattern
 
 internal class Desktop(
     private val cmdCommandPerformer: CmdCommandPerformer,
+    private val presetEmulators: List<String>,
+    private val adbServerPort: String?,
     private val logger: Logger
 ) {
 
@@ -24,7 +26,7 @@ internal class Desktop(
                         "New device has been found: $deviceName. Initialize connection to it..."
                     )
                     val deviceMirror = DeviceMirror.create(
-                        deviceName, cmdCommandPerformer, logger
+                        deviceName, adbServerPort, cmdCommandPerformer, logger
                     )
                     deviceMirror.startConnectionToDevice()
                     devices += deviceMirror
@@ -59,6 +61,7 @@ internal class Desktop(
             .map { pattern.matcher(it) }
             .filter { matcher -> matcher.find() }
             .map { matcher -> matcher.group(1) }
+            .filter { foundEmulator -> presetEmulators.isEmpty() || presetEmulators.contains(foundEmulator) }
             .toList()
     }
 
