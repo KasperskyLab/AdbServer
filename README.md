@@ -22,6 +22,13 @@ The next is to execute a simple command in your host's cmd:
 ```
 java -jar desktop.jar
 ```
+Also, you can set additional options as it's shown in the example below:
+```
+java -jar desktop.jar emulators=emulator-5554,emulator-5556 adbServerPort=5041
+```
+where: <br>
+emulators - you set a list of emulators that can be captured by desktop.jar <br>
+adbServerPort - you set the adb server port number (the default value is 5037)
 
 #### Device
 1) To include built library */artifacts/device.jar* in your project (later it will be substituted by jcenter).
