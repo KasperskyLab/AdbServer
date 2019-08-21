@@ -53,7 +53,7 @@ internal class DesktopDeviceSocketConnectionForwardImpl(
 
     override fun getDeviceSocketLoad(): () -> Socket = {
         logger.i(tag, "getDeviceSocketLoad", "started")
-        val serverSocket by lazy { ServerSocket(DEVICE_PORT) }
+        val serverSocket = ServerSocket(DEVICE_PORT)
         val readyServerSocket = serverSocket.accept()
         logger.i(tag, "getDeviceSocketLoad", "completed")
         readyServerSocket
