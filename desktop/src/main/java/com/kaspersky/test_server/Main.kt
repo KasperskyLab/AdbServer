@@ -19,6 +19,8 @@ internal fun main(args: Array<String>) {
         ?.trim()
 
     val logger = LoggerFactory.systemLogger()
+    logger.i("MAIN", "arguments: emulators=$emulators, adbServerPort=$adbServerPort")
+
     val cmdCommandPerformer = CmdCommandPerformer()
     val desktop = Desktop(
         cmdCommandPerformer = cmdCommandPerformer,

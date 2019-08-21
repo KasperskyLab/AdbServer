@@ -17,7 +17,7 @@ internal class CommandExecutorImpl(
         return when (command) {
             is CmdCommand -> cmdCommandPerformer.perform(command.body)
             is AdbCommand -> {
-                val adbCommand = "adb ${ adbServerPort?.let { "-P $adbServerPort" } } -s $deviceName ${command.body}"
+                val adbCommand = "adb ${ adbServerPort?.let { "-P $adbServerPort " } ?: "" }-s $deviceName ${command.body}"
                 logger.i("CommandExecutorImpl", "execute", "adbCommand=$adbCommand")
                 cmdCommandPerformer.perform(adbCommand)
             }
