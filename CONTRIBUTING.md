@@ -6,8 +6,8 @@
 5.	Run all unit tests and make sure all of them pass.
 6.	Run code coverage to check if the lines of code you added are covered by unit tests.
 7.	Once your feature is complete, prepare the commit with appropriate message and the issue number.
-8.	Create a pull request and wait for the users to review. When you submit a pull request, please, agree to the terms of CLA by adding the following text into it:
-“I hereby agree to the terms of the Contributor License Agreement available at https://help.kaspersky.com/CLA.”
-I agree that my GitHub nickname and e-mail will be added to the AUTHORS file.
-9.	Once everything is done, your pull request gets merged. Your feature will be available with the next release and your name will be added to AUTHORS.
+8.	Create a pull request and wait for the users to review. When you submit a pull request, please, agree to the terms of [CLA](https://github.com/matzuk/AdbServer/blob/github/CLA.md) by adding the following text into it:
+“I hereby agree to the terms of the Contributor License Agreement available at https://help.kaspersky.com/CLA.
+I agree that my GitHub nickname and e-mail will be added to the AUTHORS file".
+9.	Once everything is done, your pull request gets merged. Your feature will be available with the next release and your name will be added to [AUTHORS](https://github.com/matzuk/AdbServer/blob/github/AUTHORS.md).
 

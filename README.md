@@ -1,5 +1,5 @@
 # Autotests Adb Server
-### What is it?
+## What is it?
 When you are writing ui-tests you need do some actions with device sometimes. 
 You may to execute a big part of those actions by [ADB](https://developer.android.com/studio/command-line/adb).
 But Espresso doesn't contain a mechanism allowing Adb commands fulfilling although Appium does. <br> 
@@ -14,7 +14,7 @@ That's why the tool is consist of two parts: **Desktop** and **Device**. <br>
 **Desktop** - is the server listening commands from devices to execute adb-commands. <br>
 **Device** - is the client sending commands to the server from your tests.
 
-### Usage
+## Usage
 
 #### Server/Desktop
 You need to start the **Desktop** on your host (desktop/server) **before** tests' start to execute. <br>
@@ -65,7 +65,7 @@ Also these methods don't throw any exception. All possible results are mapping i
 All methods of ```AdbTerminal``` may be call from any thread. <br>
 So, please observe **example** module.
 
-### Logs
+## Logs
 Let's consider what the developer looks in the logs on the host and the device. <br>
 
 #### The host logs
@@ -187,3 +187,16 @@ INFO:_____tag=ConnectionClientImplBySocket____________method=handleMessages_____
 INFO:_____tag=ConnectionClientImplBySocket____________method=executeAdbCommand_______________________message => command=AdbCommand(body=shell input text 1) completed with commandResult=CommandResult(status=SUCCESS, description=exitCode=0, message=)
 INFO:_____tag=Device__________________________________method=execute_________________________________message => The result of command=AdbCommand(body=shell input text 1) => CommandResult(status=SUCCESS, description=exitCode=0, message=)
 ```
+
+## Integration
+// todo
+
+## Links
+// todo
+
+## Contribution Policy
+AdbServer is an open source project, and depends on its users to improve it. We are more than happy to find you interested in taking the project forward. <br>
+Kindly refer to the [Contribution Guidelines](https://github.com/matzuk/AdbServer/blob/github/CONTRIBUTING.md) for detailed information.
+
+## License
+Kaspresso is open source and available under the [Apache License, Version 2.0](https://github.com/matzuk/AdbServer/blob/github/LICENSE).
