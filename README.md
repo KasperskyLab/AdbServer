@@ -65,7 +65,7 @@ Also these methods don't throw any exception. All possible results are mapping i
 All methods of ```AdbTerminal``` may be call from any thread. <br>
 So, please observe **example** module.
 
-## Logs
+### Logs
 Let's consider what the developer looks in the logs on the host and the device. <br>
 
 #### The host logs
