@@ -199,4 +199,4 @@ AdbServer is an open source project, and depends on its users to improve it. We 
 Kindly refer to the [Contribution Guidelines](https://github.com/matzuk/AdbServer/blob/github/CONTRIBUTING.md) for detailed information.
 
 ## License
-Kaspresso is open source and available under the [Apache License, Version 2.0](https://github.com/matzuk/AdbServer/blob/github/LICENSE).
+AdbServer is open source and available under the [Apache License, Version 2.0](https://github.com/matzuk/AdbServer/blob/github/LICENSE).
