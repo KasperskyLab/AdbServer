@@ -59,7 +59,7 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     }
 
     fun sendMessage(sendModel: SendModel) {
-        logger.i(tag, "sendMessage","where sendModel=$sendModel")
+        logger.i(tag, "sendMessage", "where sendModel=$sendModel")
         try {
             outputStream.writeObject(sendModel)
             outputStream.flush()
@@ -99,5 +99,4 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
             disruptAction.invoke()
         }
     }
-
 }

@@ -1,6 +1,9 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspersky.test_server.api.*
+import com.kaspersky.test_server.api.Command
+import com.kaspersky.test_server.api.CommandResult
+import com.kaspersky.test_server.api.ConnectionClient
+import com.kaspersky.test_server.api.ExecutorResultStatus
 import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -24,7 +27,6 @@ internal class ConnectionClientImplBySocket(
     private var _socket: Socket? = null
     private val socket: Socket
         get() = _socket ?: throw IllegalStateException("tryConnect must be called first")
-
 
     private var _socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>? = null
     private val socketMessagesTransferring: SocketMessagesTransferring<ResultMessage<CommandResult>, TaskMessage>
@@ -83,6 +85,7 @@ internal class ConnectionClientImplBySocket(
     override fun isConnected(): Boolean =
         connectionMaker.isConnected()
 
+    @Suppress("ReturnCount")
     override fun executeCommand(command: Command): CommandResult {
         logger.i(tag, "executeAdbCommand", "started command=$command")
 
@@ -97,7 +100,7 @@ internal class ConnectionClientImplBySocket(
             resultMessage = resultWaiter.waitResult(COMMAND_TIMEOUT_MIN, TimeUnit.SECONDS)
         } catch (exception: InterruptedException) {
             val failedCommandResult = CommandResult(ExecutorResultStatus.FAILED, "Waiting thread was interrupted")
-            logger.i(tag, "executeAdbCommand","command=$command failed with commandResult=$failedCommandResult")
+            logger.i(tag, "executeAdbCommand", "command=$command failed with commandResult=$failedCommandResult")
             return failedCommandResult
         } finally {
             commandsInProgress.remove(command)
@@ -105,12 +108,11 @@ internal class ConnectionClientImplBySocket(
 
         if (resultMessage == null) {
             val failedCommandResult = CommandResult(ExecutorResultStatus.FAILED, "Waiting result timeout was expired")
-            logger.i(tag, "executeAdbCommand","command=$command failed with commandResult=$failedCommandResult")
+            logger.i(tag, "executeAdbCommand", "command=$command failed with commandResult=$failedCommandResult")
             return failedCommandResult
         }
-        logger.i(tag, "executeAdbCommand","command=$command completed with commandResult=${resultMessage.data}")
+        logger.i(tag, "executeAdbCommand", "command=$command completed with commandResult=${resultMessage.data}")
 
         return resultMessage.data
     }
-
 }

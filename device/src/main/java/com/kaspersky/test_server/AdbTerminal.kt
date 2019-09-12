@@ -26,5 +26,4 @@ object AdbTerminal {
      * Please first of all call [connect] method to establish a connection
      */
     fun executeCmd(command: String): CommandResult = device.fulfill(CmdCommand(command))
-
 }

@@ -1,6 +1,10 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.api.*
+import com.kaspersky.test_server.api.Command
+import com.kaspersky.test_server.api.CommandResult
+import com.kaspersky.test_server.api.ConnectionClient
+import com.kaspersky.test_server.api.ConnectionFactory
+import com.kaspersky.test_server.api.ExecutorResultStatus
 import com.kaspresky.test_server.log.Logger
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -12,6 +16,8 @@ internal class Device private constructor(
 
     companion object {
         private const val CONNECTION_ESTABLISH_TIMEOUT_SEC = 5L
+        private const val CONNECTION_WAIT_MS = 200L
+
         fun create(logger: Logger): Device {
             val desktopDeviceSocketConnection =
                 DesktopDeviceSocketConnectionFactory.getSockets(
@@ -67,12 +73,11 @@ internal class Device private constructor(
 
     @Throws(ConnectionTimeException::class)
     private fun awaitConnectionEstablished(timeout: Long, timeUnit: TimeUnit) {
-        val waitStepMs = 200L
         val timeoutMs = timeUnit.toMillis(timeout)
         var waitTime = 0L
         while (!connectionClient.isConnected() && waitTime <= timeoutMs) {
-            Thread.sleep(waitStepMs)
-            waitTime += waitStepMs
+            Thread.sleep(CONNECTION_WAIT_MS)
+            waitTime += CONNECTION_WAIT_MS
         }
         if (!connectionClient.isConnected()) {
             throw ConnectionTimeException(
@@ -84,7 +89,7 @@ internal class Device private constructor(
     // todo get name of the device?
     private inner class WatchdogThread : Thread("Connection watchdog thread from Device to Desktop") {
         override fun run() {
-            logger.i("$tag.WatchdogThread","run", "WatchdogThread starts from Device to Desktop")
+            logger.i("$tag.WatchdogThread", "run", "WatchdogThread starts from Device to Desktop")
             while (isRunning.get()) {
                 if (!connectionClient.isConnected()) {
                     try {
@@ -97,5 +102,4 @@ internal class Device private constructor(
             }
         }
     }
-
 }

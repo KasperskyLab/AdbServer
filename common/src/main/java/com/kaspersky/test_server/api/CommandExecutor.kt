@@ -10,5 +10,4 @@ interface CommandExecutor {
      * Otherwise the result may be unpredictable.
      */
     fun execute(command: Command): CommandResult
-
 }

@@ -66,6 +66,4 @@ internal class ConnectionMaker(
         DISCONNECTING,
         DISCONNECTED
     }
-
 }
-

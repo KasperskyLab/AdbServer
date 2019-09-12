@@ -1,6 +1,5 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.DesktopDeviceSocketConnectionType.*
 import com.kaspresky.test_server.log.Logger
 
 object DesktopDeviceSocketConnectionFactory {
@@ -9,10 +8,9 @@ object DesktopDeviceSocketConnectionFactory {
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
         logger: Logger
     ): DesktopDeviceSocketConnection {
-        return when(desktopDeviceSocketConnectionType) {
-            FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
-            REVERSE -> throw UnsupportedOperationException("Please implement REVERSE DesktopDeviceSocketConnection")
+        return when (desktopDeviceSocketConnectionType) {
+            DesktopDeviceSocketConnectionType.FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
+            DesktopDeviceSocketConnectionType.REVERSE -> throw UnsupportedOperationException("Please implement REVERSE DesktopDeviceSocketConnection")
         }
     }
-
 }

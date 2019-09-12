@@ -10,5 +10,4 @@ interface ConnectionClient : BaseConnection {
      * because if commands were completed in incorrect order it may to lead inconsistent state of the app and the device
      */
     fun executeCommand(command: Command): CommandResult
-
 }

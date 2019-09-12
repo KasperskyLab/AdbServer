@@ -14,5 +14,4 @@ internal interface LightSocketWrapper {
 
     @Throws(IOException::class)
     fun getInputStream(): InputStream
-
 }

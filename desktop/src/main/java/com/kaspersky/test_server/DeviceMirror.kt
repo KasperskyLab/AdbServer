@@ -1,8 +1,8 @@
 package com.kaspersky.test_server
 
-import com.kaspersky.test_server.api.*
+import com.kaspersky.test_server.api.ConnectionFactory
+import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspresky.test_server.log.Logger
-import java.lang.Exception
 import java.util.concurrent.atomic.AtomicReference
 
 internal class DeviceMirror private constructor(
@@ -12,6 +12,8 @@ internal class DeviceMirror private constructor(
 ) {
 
     companion object {
+        private const val CONNECTION_WAIT_MS = 500L
+
         fun create(
             deviceName: String,
             adbServerPort: String?,
@@ -62,9 +64,8 @@ internal class DeviceMirror private constructor(
                         logger.i("$tag.WatchdogThread", "run", "The attempt to connect to Device=$deviceName was with exception: $exception")
                     }
                 }
-                sleep(500)
+                sleep(CONNECTION_WAIT_MS)
             }
         }
     }
-
 }

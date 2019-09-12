@@ -36,5 +36,4 @@ interface Logger {
      * Error level of logging with tag.
      */
     fun e(tag: String, method: String, exception: Exception)
-
 }

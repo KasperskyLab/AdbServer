@@ -8,5 +8,4 @@ object LoggerFactory {
     fun emptyLogger(): Logger = LoggerEmptyImpl()
 
     fun systemLogger(): Logger = LoggerSystemImpl()
-
 }

@@ -15,5 +15,4 @@ internal class LoggerEmptyImpl : Logger {
     override fun e(tag: String, exception: Exception) = Unit
 
     override fun e(tag: String, method: String, exception: Exception) = Unit
-
 }

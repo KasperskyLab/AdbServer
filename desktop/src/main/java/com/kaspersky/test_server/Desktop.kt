@@ -11,11 +11,15 @@ internal class Desktop(
     private val logger: Logger
 ) {
 
+    companion object {
+        private const val PAUSE_MS = 500L
+    }
+
     private val tag = javaClass.simpleName
     private val devices: MutableCollection<DeviceMirror> = mutableListOf()
 
     fun startDevicesObserving() {
-        logger.i(tag, "startDevicesObserving",  "start")
+        logger.i(tag, "startDevicesObserving", "start")
         while (true) {
             val namesOfAttachedDevicesByAdb = getAttachedDevicesByAdb()
             namesOfAttachedDevicesByAdb.forEach { deviceName ->
@@ -45,7 +49,7 @@ internal class Desktop(
                     return@removeIf false
                 }
             }
-            Thread.sleep(500)
+            Thread.sleep(PAUSE_MS)
         }
     }
 
@@ -64,5 +68,4 @@ internal class Desktop(
             .filter { foundEmulator -> presetEmulators.isEmpty() || presetEmulators.contains(foundEmulator) }
             .toList()
     }
-
 }

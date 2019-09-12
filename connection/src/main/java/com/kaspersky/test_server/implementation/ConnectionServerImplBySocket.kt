@@ -1,8 +1,8 @@
 package com.kaspersky.test_server.implementation
 
 import com.kaspersky.test_server.api.CommandExecutor
-import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspersky.test_server.api.CommandResult
+import com.kaspersky.test_server.api.ConnectionServer
 import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperImpl
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
@@ -24,7 +24,7 @@ internal class ConnectionServerImplBySocket(
 
     private var _socket: Socket? = null
     private val socket: Socket
-        get() =_socket ?: throw IllegalStateException("tryConnect must be called first")
+        get() = _socket ?: throw IllegalStateException("tryConnect must be called first")
 
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
@@ -57,7 +57,7 @@ internal class ConnectionServerImplBySocket(
             }
         }
     }
-    
+
     override fun tryDisconnect() {
         logger.i(tag, "tryDisconnect", "start")
         connectionMaker.disconnect {
@@ -69,5 +69,4 @@ internal class ConnectionServerImplBySocket(
 
     override fun isConnected(): Boolean =
         connectionMaker.isConnected()
-
 }

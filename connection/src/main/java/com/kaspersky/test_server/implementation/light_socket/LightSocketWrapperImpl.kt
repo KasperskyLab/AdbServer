@@ -9,5 +9,4 @@ internal class LightSocketWrapperImpl(private val socket: Socket) : LightSocketW
     override fun getOutputStream(): OutputStream = socket.getOutputStream()
 
     override fun getInputStream(): InputStream = socket.getInputStream()
-
 }

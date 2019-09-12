@@ -15,5 +15,4 @@ interface DesktopDeviceSocketConnection {
     fun getDesktopSocketLoad(executor: CommandExecutor): () -> Socket
 
     fun getDeviceSocketLoad(): () -> Socket
-
 }

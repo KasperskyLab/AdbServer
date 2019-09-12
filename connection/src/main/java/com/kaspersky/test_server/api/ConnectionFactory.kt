@@ -22,5 +22,4 @@ object ConnectionFactory {
         logger: Logger
     ): ConnectionClient =
         ConnectionClientImplBySocket(socketCreation, logger)
-
 }

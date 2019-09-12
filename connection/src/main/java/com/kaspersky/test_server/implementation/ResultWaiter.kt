@@ -22,5 +22,4 @@ internal class ResultWaiter<Result> {
         waitLatch.await(timeout, unit)
         return result
     }
-
 }

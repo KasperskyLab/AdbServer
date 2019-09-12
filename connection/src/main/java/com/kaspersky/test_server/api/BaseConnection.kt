@@ -20,5 +20,4 @@ interface BaseConnection {
      * Return status of the connection
      */
     fun isConnected(): Boolean
-
 }

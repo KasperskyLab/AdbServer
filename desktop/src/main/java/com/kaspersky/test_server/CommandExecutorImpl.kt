@@ -24,5 +24,4 @@ internal class CommandExecutorImpl(
             else -> throw UnsupportedOperationException("The command=$command is unsupported command")
         }
     }
-
 }

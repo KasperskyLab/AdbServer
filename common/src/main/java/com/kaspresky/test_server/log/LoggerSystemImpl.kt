@@ -52,6 +52,4 @@ internal class LoggerSystemImpl : Logger {
         }
         return text + "_".repeat(COMMON_FIELD_LENGTH - text.length)
     }
-
-
 }
