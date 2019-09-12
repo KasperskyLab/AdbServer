@@ -1,0 +1,9 @@
+ext.versions = [
+        minSdk         : "18",
+        compileSdk     : "28",
+        targetSdk      : "27",
+
+        kotlin         : "1.3.50",
+        androidPlugin  : "3.2.1",
+        androidSupport : "28.0.0"
+]
