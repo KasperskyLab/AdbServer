@@ -191,12 +191,12 @@ INFO:_____tag=Device__________________________________method=execute____________
 ## Integration
 // todo
 
-## Links
-// todo
+## Support
+Russian support in telegram - t.me/kaspresso
 
 ## Contribution Policy
 AdbServer is an open source project, and depends on its users to improve it. We are more than happy to find you interested in taking the project forward. <br>
-Kindly refer to the [Contribution Guidelines](https://github.com/matzuk/AdbServer/blob/github/CONTRIBUTING.md) for detailed information.
+Kindly refer to the [Contribution Guidelines](https://github.com/KasperskyLab/AdbServer/blob/master/CONTRIBUTING.md) for detailed information.
 
 ## License
-AdbServer is open source and available under the [Apache License, Version 2.0](https://github.com/matzuk/AdbServer/blob/github/LICENSE).
+AdbServer is open source and available under the [Apache License, Version 2.0](https://github.com/KasperskyLab/AdbServer/blob/master/LICENSE).
