@@ -4,6 +4,7 @@ ext {
     artifactId = 'adbserver-device'
     repo = 'AdbServer'
     repoName = 'adbserver-device'
+    vcsUrl = 'https://github.com/KasperskyLab/AdbServer.git'
 }
 
 task fatJar(type: Jar) {
@@ -53,7 +54,7 @@ bintray {
         name = this.repoName
         userOrg = user
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/RuslanMingaliev/AdbServer.git'
+        vcsUrl = this.vcsUrl
 
         version {
             name = this.ver
