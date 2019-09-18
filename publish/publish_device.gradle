@@ -6,7 +6,7 @@ ext {
     repoName = 'adbserver-device'
 }
 
-jar {
+task fatJar(type: Jar) {
     from {
         configurations.runtimeClasspath
                 .filter { !it.name.contains("kotlin") } // exclude Kotlin dependencies
@@ -33,7 +33,7 @@ artifacts {
 publishing {
     publications {
         Device(MavenPublication) {
-            artifact jar
+            artifact fatJar
             artifact sourcesJar
             artifact javadocJar
             groupId this.groupId
