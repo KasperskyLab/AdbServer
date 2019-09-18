@@ -1,0 +1,63 @@
+ext {
+    ver = '1.0.0'
+    groupId = 'com.kaspersky.android-components'
+    artifactId = 'adbserver-device'
+    repo = 'AdbServer'
+    repoName = 'adbserver-device'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath
+                .filter { !it.name.contains("kotlin") } // exclude Kotlin dependencies
+                .collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+publishing {
+    publications {
+        Device(MavenPublication) {
+            artifact jar
+            artifact sourcesJar
+            artifact javadocJar
+            groupId this.groupId
+            artifactId this.artifactId
+            version this.ver
+        }
+    }
+}
+
+bintray {
+    user = property('bintrayuser')
+    key = property('bintraykey')
+    publications = ['Device']
+
+    pkg {
+        repo = this.repo
+        name = this.repoName
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/RuslanMingaliev/AdbServer.git'
+
+        version {
+            name = this.ver
+            released = new Date()
+        }
+    }
+}

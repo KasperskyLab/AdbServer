@@ -2,6 +2,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 apply from: '../dependencies.gradle'
+apply from: '../publish/publish_device.gradle'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -16,58 +17,4 @@ repositories {
     mavenCentral()
 }
 
-jar {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource, configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-def ver = '1.0.0'
-
-publishing {
-    publications {
-        Device(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            groupId 'com.mingaliev.adbserver-fork'
-            artifactId 'device'
-            version ver
-        }
-    }
-}
-
-bintray {
-    user = property('bintrayuser')
-    key = property('bintraykey')
-    publications = ['Device']
-    pkg {
-        repo = 'AdbServer'
-        name = 'adbserver-device'
-        userOrg = user
-        licenses = ['Apache-2.0']
-        labels = ['temp']
-        vcsUrl = 'https://github.com/RuslanMingaliev/AdbServer.git'
-
-        version {
-            name = ver
-            desc = 'Temporary fork of KasperskyLab/AdbServer'
-            released = new Date()
-        }
-    }
-}
