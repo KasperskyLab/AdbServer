@@ -189,7 +189,22 @@ INFO:_____tag=Device__________________________________method=execute____________
 ```
 
 ## Integration
-// todo
+
+To use AdbServer device library, include the `jcenter` repository to your root `build.gradle` file (if it does not exist already):
+
+```
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+```
+
+And then add dependency to your module `build.gradle`:
+
+```
+implementation 'com.kaspersky.android-components:adbserver-device:1.0.0'
+```
 
 ## Support
 Russian support in telegram - t.me/kaspresso
