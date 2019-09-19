@@ -188,6 +188,11 @@ INFO:_____tag=ConnectionClientImplBySocket____________method=executeAdbCommand__
 INFO:_____tag=Device__________________________________method=execute_________________________________message => The result of command=AdbCommand(body=shell input text 1) => CommandResult(status=SUCCESS, description=exitCode=0, message=)
 ```
 
+## Additional info
+
+[RU] [Дмитрий Мовчан, Евгений Мацюк — Как начать писать автотесты и не сойти с ума](https://youtu.be/q_8UUhVDV7c?t=1285) <br>
+[RU] [Егор Курников — Единственное, что вам нужно для UI-тестирования](https://youtu.be/cTykctRSmuA?t=963) <br>
+
 ## Integration
 
 To use AdbServer device library, include the `jcenter` repository to your root `build.gradle` file (if it does not exist already):
