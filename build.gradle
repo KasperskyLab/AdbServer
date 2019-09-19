@@ -9,11 +9,12 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.androidPlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintrayPlugin"
     }
 }
 
 plugins {
-    id "io.gitlab.arturbosch.detekt" version '1.0.0-RC14'
+    id "io.gitlab.arturbosch.detekt" version '1.0.1'
 }
 
 apply from: 'static_analysis/config/qualityDetekt.gradle'
