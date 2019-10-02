@@ -208,7 +208,7 @@ allprojects {
 And then add dependency to your module `build.gradle`:
 
 ```
-implementation 'com.kaspersky.android-components:adbserver-device:1.0.0'
+androidTestImplementation 'com.kaspersky.android-components:adbserver-device:1.0.0'
 ```
 
 ## Support
