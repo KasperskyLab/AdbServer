@@ -12,7 +12,7 @@ internal class CommandExecutorImpl(
     private val adbServerPort: String?
 ) : CommandExecutor {
 
-    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
 
     override fun execute(command: Command): CommandResult {
         return when (command) {

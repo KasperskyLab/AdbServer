@@ -11,9 +11,10 @@ object ConnectionFactory {
 
     fun createServer(
         socketCreation: () -> Socket,
-        commandExecutor: CommandExecutor
+        commandExecutor: CommandExecutor,
+        deviceName: String
     ): ConnectionServer =
-            ConnectionServerImplBySocket(socketCreation, commandExecutor)
+            ConnectionServerImplBySocket(socketCreation, commandExecutor, deviceName)
 
     fun createClient(
         socketCreation: () -> Socket

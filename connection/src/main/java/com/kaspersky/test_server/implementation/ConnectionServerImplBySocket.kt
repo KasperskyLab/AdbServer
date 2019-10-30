@@ -13,11 +13,12 @@ import java.util.concurrent.Executors
 
 internal class ConnectionServerImplBySocket(
     private val socketCreation: () -> Socket,
-    private val commandExecutor: CommandExecutor
+    private val commandExecutor: CommandExecutor,
+    private val deviceName: String
 ) : ConnectionServer {
 
-    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
-    private var connectionMaker: ConnectionMaker = ConnectionMaker()
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
+    private var connectionMaker: ConnectionMaker = ConnectionMaker(deviceName)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>>
 
     private var _socket: Socket? = null
@@ -41,7 +42,8 @@ internal class ConnectionServerImplBySocket(
     private fun handleMessages() {
         socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
             lightSocketWrapper = LightSocketWrapperImpl(socket),
-            disruptAction = { tryDisconnect() }
+            disruptAction = { tryDisconnect() },
+            deviceName = deviceName
         )
         socketMessagesTransferring.startListening { taskMessage ->
             logger.i("handleMessages", "received taskMessage=$taskMessage")

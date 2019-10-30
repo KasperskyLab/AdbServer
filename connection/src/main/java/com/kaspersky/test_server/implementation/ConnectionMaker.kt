@@ -5,9 +5,9 @@ import com.kaspresky.test_server.log.LoggerFactory
 /**
  * The helper to establish a connection correctly according to all possible states and multithread's environment
  */
-internal class ConnectionMaker{
+internal class ConnectionMaker(deviceName: String? = null) {
 
-    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
     @Volatile
     private var connectionState: ConnectionState = ConnectionState.DISCONNECTED
 

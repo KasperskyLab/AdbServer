@@ -10,24 +10,27 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     private val lightSocketWrapper: LightSocketWrapper,
     private val receiveModelClass: Class<ReceiveModel>,
     private val sendModelClass: Class<SendModel>,
-    private val disruptAction: () -> Unit
+    private val disruptAction: () -> Unit,
+    deviceName: String?
 ) {
 
     companion object {
         inline fun <reified Receive, reified Send> createTransferring(
             lightSocketWrapper: LightSocketWrapper,
-            noinline disruptAction: () -> Unit
+            noinline disruptAction: () -> Unit,
+            deviceName: String? = null
         ): SocketMessagesTransferring<Receive, Send> {
             return SocketMessagesTransferring(
                 lightSocketWrapper,
                 Receive::class.java,
                 Send::class.java,
-                disruptAction
+                disruptAction,
+                deviceName
             )
         }
     }
 
-    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
 
     private lateinit var inputStream: ObjectInputStream
     private lateinit var outputStream: ObjectOutputStream

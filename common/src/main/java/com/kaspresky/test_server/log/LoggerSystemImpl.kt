@@ -44,7 +44,7 @@ internal class LoggerSystemImpl(
     }
 
     private fun getDevice(): String =
-        if (deviceName != null) { "device= $deviceName ____}" } else { "" }
+        if (deviceName != null) { "device=${deviceName}____" } else { "" }
 
     private fun getShortMessage(tag: String, message: Any): String =
         "$TAG${getFieldString(tag)}$MESSAGE$message"

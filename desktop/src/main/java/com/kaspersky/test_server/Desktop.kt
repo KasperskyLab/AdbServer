@@ -28,7 +28,7 @@ internal class Desktop(
                         "New device has been found: $deviceName. Initialize connection to it..."
                     )
                     val deviceMirror = DeviceMirror.create(
-                        deviceName, adbServerPort, cmdCommandPerformer, logger
+                        deviceName, adbServerPort, cmdCommandPerformer
                     )
                     deviceMirror.startConnectionToDevice()
                     devices += deviceMirror
