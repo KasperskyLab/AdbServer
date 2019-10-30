@@ -18,15 +18,14 @@ internal fun main(args: Array<String>) {
         ?.replace("=", "")
         ?.trim()
 
-    val logger = LoggerFactory.systemLogger()
+    val logger = LoggerFactory.getLogger(tag = "Desktop")
     logger.i("MAIN", "arguments: emulators=$emulators, adbServerPort=$adbServerPort")
 
     val cmdCommandPerformer = CmdCommandPerformer()
     val desktop = Desktop(
         cmdCommandPerformer = cmdCommandPerformer,
         presetEmulators = emulators,
-        adbServerPort = adbServerPort,
-        logger = logger
+        adbServerPort = adbServerPort
     )
     desktop.startDevicesObserving()
 }

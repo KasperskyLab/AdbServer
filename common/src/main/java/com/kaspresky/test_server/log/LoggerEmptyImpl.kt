@@ -4,15 +4,15 @@ import java.lang.Exception
 
 internal class LoggerEmptyImpl : Logger {
 
-    override fun i(tag: String, text: String) = Unit
+    override fun i(text: String) = Unit
 
-    override fun i(tag: String, method: String, text: String) = Unit
+    override fun i(method: String, text: String) = Unit
 
-    override fun d(tag: String, text: String) = Unit
+    override fun d(text: String) = Unit
 
-    override fun d(tag: String, method: String, text: String) = Unit
+    override fun d(method: String, text: String) = Unit
 
-    override fun e(tag: String, exception: Exception) = Unit
+    override fun e(exception: Exception) = Unit
 
-    override fun e(tag: String, method: String, exception: Exception) = Unit
+    override fun e(method: String, exception: Exception) = Unit
 }

@@ -5,7 +5,15 @@ package com.kaspresky.test_server.log
  */
 object LoggerFactory {
 
-    fun emptyLogger(): Logger = LoggerEmptyImpl()
+    private var loggerProvider: (tag: String, deviceName: String?) -> Logger =
+        { tag, deviceName -> LoggerSystemImpl(tag, deviceName) }
 
-    fun systemLogger(): Logger = LoggerSystemImpl()
+    fun getLogger(tag: String, deviceName: String? = null): Logger = LoggerSystemImpl(tag, deviceName)
+
+    /**
+     * Only for test purposes
+     */
+    fun setLogger(loggerProvider: (tag: String, deviceName: String?) -> Logger) {
+        this.loggerProvider = loggerProvider
+    }
 }

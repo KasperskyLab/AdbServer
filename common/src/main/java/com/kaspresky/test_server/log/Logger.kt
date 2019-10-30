@@ -10,30 +10,30 @@ interface Logger {
     /**
      * Info level of logging with tag.
      */
-    fun i(tag: String, text: String)
+    fun i(text: String)
 
     /**
      * Info level of logging with tag.
      */
-    fun i(tag: String, method: String, text: String)
+    fun i(method: String, text: String)
 
     /**
      * Debug level of logging with tag.
      */
-    fun d(tag: String, text: String)
+    fun d(text: String)
 
     /**
      * Debug level of logging with tag.
      */
-    fun d(tag: String, method: String, text: String)
+    fun d(method: String, text: String)
 
     /**
      * Error level of logging with tag.
      */
-    fun e(tag: String, exception: Exception)
+    fun e(exception: Exception)
 
     /**
      * Error level of logging with tag.
      */
-    fun e(tag: String, method: String, exception: Exception)
+    fun e(method: String, exception: Exception)
 }

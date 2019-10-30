@@ -7,7 +7,10 @@ import java.lang.Exception
  * INFO:_____tag=ConnectionMaker_________________________method=connect()_______________________________message => start
  * INFO:_____tag=ConnectionMaker_________________________method=connect()_______________________________message => current state=DISCONNECTED
  */
-internal class LoggerSystemImpl : Logger {
+internal class LoggerSystemImpl(
+    private val tag: String,
+    private val deviceName: String? = null
+) : Logger {
 
     companion object {
         private const val COMMON_FIELD_LENGTH = 40
@@ -16,29 +19,32 @@ internal class LoggerSystemImpl : Logger {
         private const val MESSAGE = "message => "
     }
 
-    override fun i(tag: String, text: String) {
-        System.out.println("INFO:_____${getShortMessage(tag, text)}")
+    override fun i(text: String) {
+        println("INFO:_____${getDevice()}${getShortMessage(tag, text)}")
     }
 
-    override fun i(tag: String, method: String, text: String) {
-        System.out.println("INFO:_____${getLongMessage(tag, method, text)}")
+    override fun i(method: String, text: String) {
+        println("INFO:_____${getDevice()}${getLongMessage(tag, method, text)}")
     }
 
-    override fun d(tag: String, text: String) {
-        System.out.println("DEBUG:____${getShortMessage(tag, text)}")
+    override fun d(text: String) {
+        println("DEBUG:____${getDevice()}${getShortMessage(tag, text)}")
     }
 
-    override fun d(tag: String, method: String, text: String) {
-        System.out.println("DEBUG:____${getLongMessage(tag, method, text)}")
+    override fun d(method: String, text: String) {
+        println("DEBUG:____${getDevice()}${getLongMessage(tag, method, text)}")
     }
 
-    override fun e(tag: String, exception: Exception) {
-        System.err.println("ERROR:____${getShortMessage(tag, exception)}")
+    override fun e(exception: Exception) {
+        System.err.println("ERROR:____${getDevice()}${getShortMessage(tag, exception)}")
     }
 
-    override fun e(tag: String, method: String, exception: Exception) {
-        System.err.println("ERROR:____${getLongMessage(tag, method, exception)}")
+    override fun e(method: String, exception: Exception) {
+        System.err.println("ERROR:____${getDevice()}${getLongMessage(tag, method, exception)}")
     }
+
+    private fun getDevice(): String =
+        if (deviceName != null) { "device= $deviceName ____}" } else { "" }
 
     private fun getShortMessage(tag: String, message: Any): String =
         "$TAG${getFieldString(tag)}$MESSAGE$message"
@@ -47,7 +53,7 @@ internal class LoggerSystemImpl : Logger {
         "$TAG${getFieldString(tag)}$METHOD${getFieldString(method)}$MESSAGE$message"
 
     private fun getFieldString(text: String): String {
-        if (text.length > COMMON_FIELD_LENGTH) {
+        if (text.length >= COMMON_FIELD_LENGTH) {
             return text + "_"
         }
         return text + "_".repeat(COMMON_FIELD_LENGTH - text.length)
