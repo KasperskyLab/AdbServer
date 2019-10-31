@@ -7,7 +7,7 @@ import java.net.Socket
 import kotlin.random.Random
 
 internal class DesktopDeviceSocketConnectionForwardImpl(
-    deviceName: String
+    deviceName: String?
 ) : DesktopDeviceSocketConnection {
 
     companion object {

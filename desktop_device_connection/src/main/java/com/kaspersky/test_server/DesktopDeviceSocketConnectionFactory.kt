@@ -4,7 +4,7 @@ object DesktopDeviceSocketConnectionFactory {
 
     fun getSockets(
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        deviceName: String
+        deviceName: String? = null
     ): DesktopDeviceSocketConnection {
         return when (desktopDeviceSocketConnectionType) {
             DesktopDeviceSocketConnectionType.FORWARD -> DesktopDeviceSocketConnectionForwardImpl(deviceName)
