@@ -14,6 +14,4 @@ object LoggerFactory {
 
     fun getLogger(tag: String, deviceName: String? = null): Logger =
         LoggerImpl(tag, deviceName, fullLogger)
-
-
 }

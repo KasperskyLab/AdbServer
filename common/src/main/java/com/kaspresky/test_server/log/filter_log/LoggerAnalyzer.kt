@@ -1,12 +1,17 @@
 package com.kaspresky.test_server.log.filter_log
 
 import com.kaspresky.test_server.log.full_logger.FullLogger
-import java.util.Deque
 import java.util.ArrayDeque
+import java.util.Deque
 
 internal class LoggerAnalyzer(
     private val fullLogger: FullLogger
 ) : FullLogger {
+
+    private companion object {
+        private const val SLASH_AT_THE_BEGINNING: Int = 40
+        private const val SLASH_AT_THE_END: Int = 100
+    }
 
     private val logStack: Deque<LogData> = ArrayDeque()
     private var logRecorder: LogRecorder = LogRecorder()
@@ -28,7 +33,7 @@ internal class LoggerAnalyzer(
         val logData = LogData(key, action)
         val position = logStack.indexOf(logData)
         val answer = logRecorder.put(position, LogData(key, action))
-        when(answer) {
+        when (answer) {
             is RecordInProgress -> { return }
             is ReadyRecord -> {
                 outputRecord(answer)
@@ -42,10 +47,10 @@ internal class LoggerAnalyzer(
         var fragmentStartString: String? = null
         var fragmentEndString: String? = null
         if (readyRecord.countOfRecordingStack > 0) {
-            fragmentStartString = "/".repeat(40) +
+            fragmentStartString = "/".repeat(SLASH_AT_THE_BEGINNING) +
                     "FRAGMENT IS REPEATED ${readyRecord.countOfRecordingStack} TIMES" +
-                    "/".repeat(40)
-            fragmentEndString = "/".repeat(100)
+                    "/".repeat(SLASH_AT_THE_BEGINNING)
+            fragmentEndString = "/".repeat(SLASH_AT_THE_END)
         }
         // output record
         fragmentStartString?.let { fullLogger.log(text = fragmentStartString) }

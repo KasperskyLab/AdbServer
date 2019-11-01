@@ -53,5 +53,4 @@ internal class FullLoggerSystemImpl : FullLogger {
         }
         return text + "_".repeat(length - text.length)
     }
-
 }

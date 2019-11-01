@@ -1,6 +1,6 @@
 package com.kaspresky.test_server.log.filter_log
 
-import java.util.*
+import java.util.Deque
 
 internal interface RecordAnswer
 

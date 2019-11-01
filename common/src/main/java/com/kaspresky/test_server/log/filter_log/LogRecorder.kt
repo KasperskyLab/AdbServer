@@ -1,6 +1,7 @@
 package com.kaspresky.test_server.log.filter_log
 
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Deque
 
 internal class LogRecorder {
 
@@ -19,6 +20,7 @@ internal class LogRecorder {
      * @param foundPosition index of last found logData
      * @param logData found LogData
      */
+    @SuppressWarnings("detekt.ReturnCount")
     fun put(foundPosition: Int, logData: LogData): RecordAnswer {
         if (state == State.NO_RECORDING && foundPosition == UNBOUND_INDEX) {
             return getSingleUniqueRecord(logData)
@@ -89,5 +91,4 @@ internal class LogRecorder {
         RECORDING,
         NO_RECORDING
     }
-
 }

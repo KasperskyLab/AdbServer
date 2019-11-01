@@ -27,5 +27,4 @@ internal class FullLoggerFilteredByDeviceProvider : FullLogger {
         loggersMap[deviceName] = fullLogger
         return fullLogger
     }
-
 }

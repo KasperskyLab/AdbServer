@@ -21,5 +21,4 @@ internal data class LogData(
     override fun hashCode(): Int {
         return logMessage.hashCode()
     }
-
 }
