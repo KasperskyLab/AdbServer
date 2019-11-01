@@ -1,51 +1,33 @@
 package com.kaspresky.test_server.log.filter_log
 
-import com.kaspresky.test_server.log.Logger
-import com.kaspresky.test_server.log.LoggerSystemImpl
-import java.lang.Exception
+import com.kaspresky.test_server.log.full_logger.FullLogger
 import java.util.Deque
 import java.util.ArrayDeque
 
-internal class LoggerFilterSystemImpl(
-    tag: String,
-    deviceName: String? = null
-) : Logger {
-
-    private val logger: Logger = LoggerSystemImpl(tag, deviceName)
-    private val systemLogger: Logger = LoggerSystemImpl(null, deviceName)
+internal class LoggerAnalyzer(
+    private val fullLogger: FullLogger
+) : FullLogger {
 
     private val logStack: Deque<LogData> = ArrayDeque()
     private var logRecorder: LogRecorder = LogRecorder()
 
-    override fun i(text: String) {
-        handleLog(text) { logger.i(text) }
+    override fun log(
+        logType: FullLogger.LogType?,
+        deviceName: String?,
+        tag: String?,
+        method: String?,
+        text: String?
+    ) {
+        handleLog(
+            key = "$logType$deviceName$tag$method$text",
+            action = { fullLogger.log(logType, deviceName, tag, method, text) }
+        )
     }
 
-    override fun i(method: String, text: String) {
-        handleLog(method + text) { logger.i(method, text) }
-    }
-
-    override fun d(text: String) {
-        // todo maybe however distinguish i, d, e
-        handleLog(text) { logger.d(text) }
-    }
-
-    override fun d(method: String, text: String) {
-        handleLog(method + text) { logger.d(method, text) }
-    }
-
-    override fun e(exception: Exception) {
-        handleLog(exception.localizedMessage) { logger.e(exception) }
-    }
-
-    override fun e(method: String, exception: Exception) {
-        handleLog("${method}__${exception.localizedMessage}") { logger.e(method, exception) }
-    }
-
-    private fun handleLog(text: String, action: () -> Unit) {
-        val logData = LogData(text, action)
+    private fun handleLog(key: String, action: () -> Unit) {
+        val logData = LogData(key, action)
         val position = logStack.indexOf(logData)
-        val answer = logRecorder.put(position, LogData(text, action))
+        val answer = logRecorder.put(position, LogData(key, action))
         when(answer) {
             is RecordInProgress -> { return }
             is ReadyRecord -> {
@@ -66,9 +48,9 @@ internal class LoggerFilterSystemImpl(
             fragmentEndString = "/".repeat(100)
         }
         // output record
-        fragmentStartString?.let { systemLogger.i(fragmentStartString) }
+        fragmentStartString?.let { fullLogger.log(text = fragmentStartString) }
         readyRecord.recordingStack.descendingIterator().forEach { it.logOutput.invoke() }
-        fragmentEndString?.let { systemLogger.i(fragmentEndString) }
+        fragmentEndString?.let { fullLogger.log(text = fragmentEndString) }
         // output remained part
         readyRecord.remainedStack.descendingIterator().forEach { it.logOutput.invoke() }
     }

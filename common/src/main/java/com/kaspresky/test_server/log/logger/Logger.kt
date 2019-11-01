@@ -1,4 +1,4 @@
-package com.kaspresky.test_server.log
+package com.kaspresky.test_server.log.logger
 
 import java.lang.Exception
 
