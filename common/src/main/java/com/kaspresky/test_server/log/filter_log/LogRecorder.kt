@@ -56,7 +56,7 @@ internal class LogRecorder {
         newLog?.let { remainedStack.addFirst(newLog) }
         if (forecastedPositionAtInitialStack > UNBOUND_INDEX) {
             recordingStack
-                .filterIndexed { index, _ -> index >= forecastedPositionAtInitialStack }
+                .filterIndexed { index, _ -> index > forecastedPositionAtInitialStack }
                 .forEachIndexed { _, logData -> remainedStack.addLast(logData) }
         }
         return ReadyRecord(

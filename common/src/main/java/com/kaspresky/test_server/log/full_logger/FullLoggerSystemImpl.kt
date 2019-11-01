@@ -9,7 +9,7 @@ internal class FullLoggerSystemImpl : FullLogger {
 
     companion object {
         private const val COMMON_FIELD_LENGTH = 43
-        private const val TAG_FIELD_LENGTH = 7
+        private const val TAG_FIELD_LENGTH = 5
         private const val DEVICE = "device="
         private const val TAG = "tag="
         private const val METHOD = "method="
