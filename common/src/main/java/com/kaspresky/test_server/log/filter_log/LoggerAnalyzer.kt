@@ -63,9 +63,6 @@ internal class LoggerAnalyzer(
     private fun updateState(readyRecord: ReadyRecord) {
         if (readyRecord.recordingStack.isNotEmpty()) {
             logStack.clear()
-            readyRecord.recordingStack.forEach {
-                logStack.addLast(it)
-            }
         }
         readyRecord.remainedStack.descendingIterator().forEach {
             logStack.addFirst(it)
