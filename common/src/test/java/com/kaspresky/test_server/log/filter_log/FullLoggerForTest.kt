@@ -2,7 +2,7 @@ package com.kaspresky.test_server.log.filter_log
 
 import com.kaspresky.test_server.log.full_logger.FullLogger
 
-internal class FullLoggerTest : FullLogger {
+internal class FullLoggerForTest : FullLogger {
 
     val list: MutableList<String> = mutableListOf()
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 
 class LoggerAnalyzerTest {
 
-    private val fullLoggerTest = FullLoggerTest()
+    private val fullLoggerTest = FullLoggerForTest()
     private val loggerAnalyzer = LoggerAnalyzer(fullLoggerTest)
 
     @Test
