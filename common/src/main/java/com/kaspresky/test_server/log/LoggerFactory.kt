@@ -10,6 +10,7 @@ object LoggerFactory {
     private val loggersMap: MutableMap<String?, Logger> = hashMapOf()
     private var loggerProvider: (tag: String, deviceName: String?) -> Logger =
         { tag, deviceName -> getLoggerForProvider(tag, deviceName) }
+//        { tag, deviceName -> LoggerSystemImpl(tag, deviceName) }
 
     fun getLogger(tag: String, deviceName: String? = null): Logger = loggerProvider.invoke(tag, deviceName)
 
