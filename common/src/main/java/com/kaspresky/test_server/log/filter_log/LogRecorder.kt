@@ -3,7 +3,9 @@ package com.kaspresky.test_server.log.filter_log
 import java.util.ArrayDeque
 import java.util.Deque
 
-internal class LogRecorder {
+internal class LogRecorder(
+    private val recordingStackMaxSize: Int
+) {
 
     companion object {
         private const val UNBOUND_INDEX: Int = -1
@@ -34,6 +36,11 @@ internal class LogRecorder {
             return record
         }
         addNewLogToStack(logData)
+        if (countOfRecordingStack >= recordingStackMaxSize) {
+            val record = getRecord(null)
+            resetState()
+            return record
+        }
         return RecordInProgress()
     }
 

@@ -5,16 +5,18 @@ import java.util.ArrayDeque
 import java.util.Deque
 
 internal class LoggerAnalyzer(
-    private val fullLogger: FullLogger
+    private val fullLogger: FullLogger,
+    recordingStackMaxSize: Int = DEFAULT_RECORDING_STACK_MAX_SIZE
 ) : FullLogger {
 
     private companion object {
         private const val SLASH_AT_THE_BEGINNING: Int = 40
         private const val SLASH_AT_THE_END: Int = 100
+        private const val DEFAULT_RECORDING_STACK_MAX_SIZE: Int = 200
     }
 
     private val logStack: Deque<LogData> = ArrayDeque()
-    private var logRecorder: LogRecorder = LogRecorder()
+    private var logRecorder: LogRecorder = LogRecorder(recordingStackMaxSize)
 
     override fun log(
         logType: FullLogger.LogType?,

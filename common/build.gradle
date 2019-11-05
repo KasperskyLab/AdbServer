@@ -5,7 +5,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     testImplementation "org.junit.jupiter:junit-jupiter:$versions.junit5"
-    testImplementation "org.assertj:assertj-core:$versions.assertJ"
+    testImplementation "com.google.truth:truth:$versions.truth"
 }
 
 repositories {

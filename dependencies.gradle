@@ -9,5 +9,5 @@ ext.versions = [
         bintrayPlugin  : "1.8.4",
 
         junit5         : "5.5.2",
-        assertJ        : "3.11.1"
+        truth          : "1.0"
 ]

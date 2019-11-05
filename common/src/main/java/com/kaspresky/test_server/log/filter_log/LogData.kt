@@ -1,6 +1,6 @@
 package com.kaspresky.test_server.log.filter_log
 
-internal data class LogData(
+internal class LogData(
     val logMessage: String,
     val logOutput: () -> Unit
 ) {
