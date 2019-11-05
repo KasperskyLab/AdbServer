@@ -1,24 +1,22 @@
 package com.kaspersky.test_server.implementation
 
-import com.kaspresky.test_server.log.Logger
+import com.kaspresky.test_server.log.LoggerFactory
 
 /**
  * The helper to establish a connection correctly according to all possible states and multithread's environment
  */
-internal class ConnectionMaker(
-    private val logger: Logger
-) {
+internal class ConnectionMaker(deviceName: String? = null) {
 
-    private val tag = javaClass.simpleName
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
     @Volatile
     private var connectionState: ConnectionState = ConnectionState.DISCONNECTED
 
     @Synchronized
     fun connect(connectAction: () -> Unit, successConnectAction: () -> Unit) {
-        logger.i(tag, "connect", "start")
-        logger.i(tag, "connect", "current state=$connectionState")
+        logger.i("connect", "start")
+        logger.i("connect", "current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
-            logger.i(tag, "connect", "Unexpected connection state appeared during connect")
+            logger.i("connect", "Unexpected connection state appeared during connect")
             return
         }
         if (connectionState == ConnectionState.CONNECTED) {
@@ -28,20 +26,20 @@ internal class ConnectionMaker(
         try {
             connectAction.invoke()
             connectionState = ConnectionState.CONNECTED
-            logger.i(tag, "connect", "updated state=$connectionState")
+            logger.i("connect", "updated state=$connectionState")
             successConnectAction.invoke()
         } catch (exception: Exception) {
-            logger.e(tag, "connect", exception)
+            logger.e("connect", exception)
             connectionState = ConnectionState.DISCONNECTED
         }
     }
 
     @Synchronized
     fun disconnect(connectAction: () -> Unit) {
-        logger.i(tag, "disconnect", "start")
-        logger.i(tag, "disconnect", "current state=$connectionState")
+        logger.i("disconnect", "start")
+        logger.i("disconnect", "current state=$connectionState")
         if (connectionState == ConnectionState.CONNECTING || connectionState == ConnectionState.DISCONNECTING) {
-            logger.i(tag, "disconnect", "Unexpected connection state appeared during disconnect")
+            logger.i("disconnect", "Unexpected connection state appeared during disconnect")
             return
         }
         if (connectionState == ConnectionState.DISCONNECTED) {
@@ -49,11 +47,11 @@ internal class ConnectionMaker(
         }
         try {
             connectionState = ConnectionState.DISCONNECTING
-            logger.i(tag, "disconnect", "updated state=$connectionState")
+            logger.i("disconnect", "updated state=$connectionState")
             connectAction.invoke()
         } finally {
             connectionState = ConnectionState.DISCONNECTED
-            logger.i(tag, "disconnect", "updated state=$connectionState")
+            logger.i("disconnect", "updated state=$connectionState")
         }
     }
 

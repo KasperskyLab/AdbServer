@@ -1,36 +1,34 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.ExecutorResultStatus
-import com.kaspresky.test_server.log.Logger
+import com.kaspresky.test_server.log.LoggerFactory
 import java.util.regex.Pattern
 
 internal class Desktop(
     private val cmdCommandPerformer: CmdCommandPerformer,
     private val presetEmulators: List<String>,
-    private val adbServerPort: String?,
-    private val logger: Logger
+    private val adbServerPort: String?
 ) {
 
     companion object {
         private const val PAUSE_MS = 500L
     }
 
-    private val tag = javaClass.simpleName
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
     private val devices: MutableCollection<DeviceMirror> = mutableListOf()
 
     fun startDevicesObserving() {
-        logger.i(tag, "startDevicesObserving", "start")
+        logger.i("startDevicesObserving", "start")
         while (true) {
             val namesOfAttachedDevicesByAdb = getAttachedDevicesByAdb()
             namesOfAttachedDevicesByAdb.forEach { deviceName ->
                 if (devices.find { client -> client.deviceName == deviceName } == null) {
                     logger.i(
-                        tag,
                         "startDevicesObserving",
                         "New device has been found: $deviceName. Initialize connection to it..."
                     )
                     val deviceMirror = DeviceMirror.create(
-                        deviceName, adbServerPort, cmdCommandPerformer, logger
+                        deviceName, adbServerPort, cmdCommandPerformer
                     )
                     deviceMirror.startConnectionToDevice()
                     devices += deviceMirror
@@ -39,7 +37,7 @@ internal class Desktop(
             devices.removeIf { client ->
                 if (client.deviceName !in namesOfAttachedDevicesByAdb) {
                     logger.i(
-                        tag,
+
                         "startDevicesObserving",
                         "Adb connection to ${client.deviceName} has been missed. Stop connection."
                     )

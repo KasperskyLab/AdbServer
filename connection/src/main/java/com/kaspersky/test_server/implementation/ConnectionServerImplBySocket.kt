@@ -7,19 +7,18 @@ import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapperI
 import com.kaspersky.test_server.implementation.transferring.ResultMessage
 import com.kaspersky.test_server.implementation.transferring.SocketMessagesTransferring
 import com.kaspersky.test_server.implementation.transferring.TaskMessage
-import com.kaspresky.test_server.log.Logger
+import com.kaspresky.test_server.log.LoggerFactory
 import java.net.Socket
 import java.util.concurrent.Executors
 
 internal class ConnectionServerImplBySocket(
     private val socketCreation: () -> Socket,
     private val commandExecutor: CommandExecutor,
-    private val logger: Logger
+    private val deviceName: String
 ) : ConnectionServer {
 
-    private val tag = javaClass.simpleName
-
-    private var connectionMaker: ConnectionMaker = ConnectionMaker(logger)
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
+    private var connectionMaker: ConnectionMaker = ConnectionMaker(deviceName)
     private lateinit var socketMessagesTransferring: SocketMessagesTransferring<TaskMessage, ResultMessage<CommandResult>>
 
     private var _socket: Socket? = null
@@ -29,28 +28,28 @@ internal class ConnectionServerImplBySocket(
     private val backgroundExecutor = Executors.newCachedThreadPool()
 
     override fun tryConnect() {
-        logger.i(tag, "tryConnect", "start")
+        logger.i("tryConnect", "start")
         connectionMaker.connect(
             connectAction = { _socket = socketCreation.invoke() },
             successConnectAction = {
-                logger.i(tag, "tryConnect", "start handleMessages")
+                logger.i("tryConnect", "start handleMessages")
                 handleMessages()
             }
         )
-        logger.i(tag, "tryConnect", "attempt completed")
+        logger.i("tryConnect", "attempt completed")
     }
 
     private fun handleMessages() {
         socketMessagesTransferring = SocketMessagesTransferring.createTransferring(
             lightSocketWrapper = LightSocketWrapperImpl(socket),
-            logger = logger,
-            disruptAction = { tryDisconnect() }
+            disruptAction = { tryDisconnect() },
+            deviceName = deviceName
         )
         socketMessagesTransferring.startListening { taskMessage ->
-            logger.i(tag, "handleMessages", "received taskMessage=$taskMessage")
+            logger.i("handleMessages", "received taskMessage=$taskMessage")
             backgroundExecutor.execute {
                 val result = commandExecutor.execute(taskMessage.command)
-                logger.i(tag, "handleMessages.backgroundExecutor", "result of taskMessage=$taskMessage => result=$result")
+                logger.i("handleMessages.backgroundExecutor", "result of taskMessage=$taskMessage => result=$result")
                 socketMessagesTransferring.sendMessage(
                     ResultMessage(taskMessage.command, result)
                 )
@@ -59,12 +58,12 @@ internal class ConnectionServerImplBySocket(
     }
 
     override fun tryDisconnect() {
-        logger.i(tag, "tryDisconnect", "start")
+        logger.i("tryDisconnect", "start")
         connectionMaker.disconnect {
             socketMessagesTransferring.stopListening()
             socket.close()
         }
-        logger.i(tag, "tryDisconnect", "attempt completed")
+        logger.i("tryDisconnect", "attempt completed")
     }
 
     override fun isConnected(): Boolean =

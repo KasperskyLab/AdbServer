@@ -5,46 +5,43 @@ import com.kaspersky.test_server.api.CommandResult
 import com.kaspersky.test_server.api.ConnectionClient
 import com.kaspersky.test_server.api.ConnectionFactory
 import com.kaspersky.test_server.api.ExecutorResultStatus
-import com.kaspresky.test_server.log.Logger
+import com.kaspresky.test_server.log.LoggerFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class Device private constructor(
-    private val connectionClient: ConnectionClient,
-    private val logger: Logger
+    private val connectionClient: ConnectionClient
 ) {
 
     companion object {
         private const val CONNECTION_ESTABLISH_TIMEOUT_SEC = 5L
         private const val CONNECTION_WAIT_MS = 200L
 
-        fun create(logger: Logger): Device {
+        fun create(): Device {
             val desktopDeviceSocketConnection =
                 DesktopDeviceSocketConnectionFactory.getSockets(
-                    DesktopDeviceSocketConnectionType.FORWARD,
-                    logger
+                    DesktopDeviceSocketConnectionType.FORWARD
                 )
             val connectionClient = ConnectionFactory.createClient(
-                desktopDeviceSocketConnection.getDeviceSocketLoad(),
-                logger
+                desktopDeviceSocketConnection.getDeviceSocketLoad()
             )
-            return Device(connectionClient, logger)
+            return Device(connectionClient)
         }
     }
 
-    private val tag = javaClass.simpleName
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName)
     private val isRunning = AtomicBoolean(false)
 
     fun startConnectionToDesktop() {
         if (isRunning.compareAndSet(false, true)) {
-            logger.i(tag, "start", "start")
+            logger.i("start", "start")
             WatchdogThread().start()
         }
     }
 
     fun stopConnectionToDesktop() {
         if (isRunning.compareAndSet(true, false)) {
-            logger.i(tag, "stop", "stop")
+            logger.i("stop", "stop")
             connectionClient.tryDisconnect()
         }
     }
@@ -57,7 +54,7 @@ internal class Device private constructor(
      * 2. the adb command execution time
      */
     fun fulfill(command: Command): CommandResult {
-        logger.i(tag, "execute", "Start to execute the command=$command")
+        logger.i("execute", "Start to execute the command=$command")
         val commandResult = try {
             awaitConnectionEstablished(CONNECTION_ESTABLISH_TIMEOUT_SEC, TimeUnit.SECONDS)
             connectionClient.executeCommand(command)
@@ -67,7 +64,7 @@ internal class Device private constructor(
                 "The time for the connection establishment is over"
             )
         }
-        logger.i(tag, "execute", "The result of command=$command => $commandResult")
+        logger.i("execute", "The result of command=$command => $commandResult")
         return commandResult
     }
 
@@ -89,14 +86,14 @@ internal class Device private constructor(
     // todo get name of the device?
     private inner class WatchdogThread : Thread("Connection watchdog thread from Device to Desktop") {
         override fun run() {
-            logger.i("$tag.WatchdogThread", "run", "WatchdogThread starts from Device to Desktop")
+            logger.i("WatchdogThread.run", "WatchdogThread starts from Device to Desktop")
             while (isRunning.get()) {
                 if (!connectionClient.isConnected()) {
                     try {
-                        logger.i("$tag.WatchdogThread", "run", "Try to connect to Desktop...")
+                        logger.i("WatchdogThread.run", "Try to connect to Desktop...")
                         connectionClient.tryConnect()
                     } catch (exception: Exception) {
-                        logger.i("$tag.WatchdogThread", "run", "The attempt to connect to Desktop was with exception: $exception")
+                        logger.i("WatchdogThread.run", "The attempt to connect to Desktop was with exception: $exception")
                     }
                 }
             }

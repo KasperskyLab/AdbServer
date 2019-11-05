@@ -2,7 +2,6 @@ package com.kaspersky.test_server.api
 
 import com.kaspersky.test_server.implementation.ConnectionClientImplBySocket
 import com.kaspersky.test_server.implementation.ConnectionServerImplBySocket
-import com.kaspresky.test_server.log.Logger
 import java.net.Socket
 
 /**
@@ -13,13 +12,12 @@ object ConnectionFactory {
     fun createServer(
         socketCreation: () -> Socket,
         commandExecutor: CommandExecutor,
-        logger: Logger
+        deviceName: String
     ): ConnectionServer =
-            ConnectionServerImplBySocket(socketCreation, commandExecutor, logger)
+            ConnectionServerImplBySocket(socketCreation, commandExecutor, deviceName)
 
     fun createClient(
-        socketCreation: () -> Socket,
-        logger: Logger
+        socketCreation: () -> Socket
     ): ConnectionClient =
-        ConnectionClientImplBySocket(socketCreation, logger)
+        ConnectionClientImplBySocket(socketCreation)
 }

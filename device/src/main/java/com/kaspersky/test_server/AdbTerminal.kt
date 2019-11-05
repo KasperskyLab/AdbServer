@@ -1,13 +1,10 @@
 package com.kaspersky.test_server
 
 import com.kaspersky.test_server.api.CommandResult
-import com.kaspresky.test_server.log.LoggerFactory
 
 object AdbTerminal {
 
-    private val device = Device.create(
-        LoggerFactory.systemLogger()
-    )
+    private val device = Device.create()
 
     fun connect() {
         device.startConnectionToDesktop()

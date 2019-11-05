@@ -1,15 +1,13 @@
 package com.kaspersky.test_server
 
-import com.kaspresky.test_server.log.Logger
-
 object DesktopDeviceSocketConnectionFactory {
 
     fun getSockets(
         desktopDeviceSocketConnectionType: DesktopDeviceSocketConnectionType,
-        logger: Logger
+        deviceName: String? = null
     ): DesktopDeviceSocketConnection {
         return when (desktopDeviceSocketConnectionType) {
-            DesktopDeviceSocketConnectionType.FORWARD -> DesktopDeviceSocketConnectionForwardImpl(logger)
+            DesktopDeviceSocketConnectionType.FORWARD -> DesktopDeviceSocketConnectionForwardImpl(deviceName)
             DesktopDeviceSocketConnectionType.REVERSE -> throw UnsupportedOperationException("Please implement REVERSE DesktopDeviceSocketConnection")
         }
     }

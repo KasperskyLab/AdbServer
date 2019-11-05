@@ -7,4 +7,7 @@ ext.versions = [
         androidPlugin  : "3.2.1",
         androidSupport : "1.0.2",
         bintrayPlugin  : "1.8.4",
+
+        junit5         : "5.5.2",
+        truth          : "1.0"
 ]

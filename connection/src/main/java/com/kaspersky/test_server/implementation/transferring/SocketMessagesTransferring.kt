@@ -1,7 +1,7 @@
 package com.kaspersky.test_server.implementation.transferring
 
 import com.kaspersky.test_server.implementation.light_socket.LightSocketWrapper
-import com.kaspresky.test_server.log.Logger
+import com.kaspresky.test_server.log.LoggerFactory
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -10,27 +10,27 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     private val lightSocketWrapper: LightSocketWrapper,
     private val receiveModelClass: Class<ReceiveModel>,
     private val sendModelClass: Class<SendModel>,
-    private val logger: Logger,
-    private val disruptAction: () -> Unit
+    private val disruptAction: () -> Unit,
+    deviceName: String?
 ) {
 
     companion object {
         inline fun <reified Receive, reified Send> createTransferring(
             lightSocketWrapper: LightSocketWrapper,
-            logger: Logger,
-            noinline disruptAction: () -> Unit
+            noinline disruptAction: () -> Unit,
+            deviceName: String? = null
         ): SocketMessagesTransferring<Receive, Send> {
             return SocketMessagesTransferring(
                 lightSocketWrapper,
                 Receive::class.java,
                 Send::class.java,
-                logger,
-                disruptAction
+                disruptAction,
+                deviceName
             )
         }
     }
 
-    private val tag = javaClass.simpleName
+    private val logger = LoggerFactory.getLogger(tag = javaClass.simpleName, deviceName = deviceName)
 
     private lateinit var inputStream: ObjectInputStream
     private lateinit var outputStream: ObjectOutputStream
@@ -39,14 +39,14 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     private val isRunning: AtomicBoolean = AtomicBoolean(false)
 
     fun startListening(listener: (ReceiveModel) -> Unit) {
-        logger.i(tag, "startListening", "start")
+        logger.i("startListening", "start")
         messagesListener = listener
         try {
             outputStream = ObjectOutputStream(lightSocketWrapper.getOutputStream())
             inputStream = ObjectInputStream(lightSocketWrapper.getInputStream())
-            logger.i(tag, "startListening", "IO Streams were created")
+            logger.i("startListening", "IO Streams were created")
         } catch (exception: Exception) {
-            logger.e(tag, "startListening", exception)
+            logger.e("startListening", exception)
             disruptAction.invoke()
             return
         }
@@ -59,12 +59,12 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
     }
 
     fun sendMessage(sendModel: SendModel) {
-        logger.i(tag, "sendMessage", "where sendModel=$sendModel")
+        logger.i("sendMessage", "where sendModel=$sendModel")
         try {
             outputStream.writeObject(sendModel)
             outputStream.flush()
         } catch (exception: Exception) {
-            logger.e(tag, "sendMessage", exception)
+            logger.e("sendMessage", exception)
         }
     }
 
@@ -74,7 +74,7 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
 
     private inner class MessagesListeningThread : Thread() {
         override fun run() {
-            logger.i("$tag.MessagesListeningThread", "run", "start to work")
+            logger.i("MessagesListeningThread.run", "start to work")
             while (isRunning.get()) {
                 peekNextMessage()
             }
@@ -86,16 +86,16 @@ internal class SocketMessagesTransferring<ReceiveModel, SendModel> private const
         try {
             obj = inputStream.readObject()
             if (obj.javaClass == receiveModelClass) {
-                logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj")
+                logger.i("MessagesListeningThread.peekNextMessage", "with message=$obj")
                 messagesListener.invoke(obj as ReceiveModel)
             } else {
-                logger.i("$tag.MessagesListeningThread", "peekNextMessage", "with message=$obj" +
+                logger.i("MessagesListeningThread.peekNextMessage", "with message=$obj" +
                         " but this message type is not $receiveModelClass"
                 )
                 disruptAction.invoke()
             }
         } catch (exception: Exception) {
-            logger.e("$tag.MessagesListeningThread", "peekNextMessage", exception)
+            logger.e("MessagesListeningThread.peekNextMessage", exception)
             disruptAction.invoke()
         }
     }
