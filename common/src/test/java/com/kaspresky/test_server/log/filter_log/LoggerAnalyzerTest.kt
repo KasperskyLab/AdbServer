@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 class LoggerAnalyzerTest {
 
     private val fullLoggerTest = FullLoggerForTest()
-    private val loggerAnalyzer = LoggerAnalyzer(
-        fullLogger = fullLoggerTest,
+    private val loggerAnalyzer = FullLoggerOptimiser(
+        originalFullLogger = fullLoggerTest,
         recordingStackMaxSize = 5
     )
 

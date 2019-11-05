@@ -1,9 +1,9 @@
 package com.kaspresky.test_server.log.full_logger
 
 /**
- * Presents logs in next form:
- * INFO:_____tag=ConnectionMaker_________________________method=connect()_______________________________message => start
- * INFO:_____tag=ConnectionMaker_________________________method=connect()_______________________________message => current state=DISCONNECTED
+ * Presents logs in the form like:
+ * INFO:_____tag=ConnectionMaker____________method=connect()_________________message => start
+ * INFO:_____tag=ConnectionMaker____________method=connect()_________________message => current state=DISCONNECTED
  */
 internal class FullLoggerSystemImpl : FullLogger {
 

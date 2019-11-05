@@ -1,7 +1,7 @@
 package com.kaspresky.test_server.log
 
-import com.kaspresky.test_server.log.filter_log.FullLoggerFilteredByDeviceProvider
 import com.kaspresky.test_server.log.full_logger.FullLogger
+import com.kaspresky.test_server.log.full_logger.FullLoggerFilteringByDeviceProvider
 import com.kaspresky.test_server.log.logger.Logger
 import com.kaspresky.test_server.log.logger.LoggerImpl
 
@@ -10,7 +10,8 @@ import com.kaspresky.test_server.log.logger.LoggerImpl
  */
 object LoggerFactory {
 
-    private val fullLogger: FullLogger = FullLoggerFilteredByDeviceProvider()
+    private val fullLogger: FullLogger =
+        FullLoggerFilteringByDeviceProvider()
 
     fun getLogger(tag: String, deviceName: String? = null): Logger =
         LoggerImpl(tag, deviceName, fullLogger)

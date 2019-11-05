@@ -1,9 +1,8 @@
-package com.kaspresky.test_server.log.filter_log
+package com.kaspresky.test_server.log.full_logger
 
-import com.kaspresky.test_server.log.full_logger.FullLogger
-import com.kaspresky.test_server.log.full_logger.FullLoggerSystemImpl
+import com.kaspresky.test_server.log.filter_log.FullLoggerOptimiser
 
-internal class FullLoggerFilteredByDeviceProvider : FullLogger {
+internal class FullLoggerFilteringByDeviceProvider : FullLogger {
 
     private val loggersMap: MutableMap<String?, FullLogger> = hashMapOf()
 
@@ -21,7 +20,7 @@ internal class FullLoggerFilteredByDeviceProvider : FullLogger {
         if (loggersMap.containsKey(deviceName)) {
             return loggersMap[deviceName] ?: throw RuntimeException("It's unbelievable!")
         }
-        val fullLogger = LoggerAnalyzer(
+        val fullLogger = FullLoggerOptimiser(
             FullLoggerSystemImpl()
         )
         loggersMap[deviceName] = fullLogger

@@ -4,8 +4,8 @@ import com.kaspresky.test_server.log.full_logger.FullLogger
 import java.util.ArrayDeque
 import java.util.Deque
 
-internal class LoggerAnalyzer(
-    private val fullLogger: FullLogger,
+internal class FullLoggerOptimiser(
+    private val originalFullLogger: FullLogger,
     recordingStackMaxSize: Int = DEFAULT_RECORDING_STACK_MAX_SIZE
 ) : FullLogger {
 
@@ -27,7 +27,7 @@ internal class LoggerAnalyzer(
     ) {
         handleLog(
             key = "$logType$deviceName$tag$method$text",
-            action = { fullLogger.log(logType, deviceName, tag, method, text) }
+            action = { originalFullLogger.log(logType, deviceName, tag, method, text) }
         )
     }
 
@@ -55,9 +55,9 @@ internal class LoggerAnalyzer(
             fragmentEndString = "/".repeat(SLASH_AT_THE_END)
         }
         // output record
-        fragmentStartString?.let { fullLogger.log(text = fragmentStartString) }
+        fragmentStartString?.let { originalFullLogger.log(text = fragmentStartString) }
         readyRecord.recordingStack.descendingIterator().forEach { it.logOutput.invoke() }
-        fragmentEndString?.let { fullLogger.log(text = fragmentEndString) }
+        fragmentEndString?.let { originalFullLogger.log(text = fragmentEndString) }
         // output remained part
         readyRecord.remainedStack.descendingIterator().forEach { it.logOutput.invoke() }
     }
