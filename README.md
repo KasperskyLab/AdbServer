@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/KasperskyLab/AdbServer.svg?style=svg)](https://circleci.com/gh/KasperskyLab/AdbServer)
+
 # Autotests Adb Server
 ## What is it?
 When you are writing ui-tests you need do some actions with device sometimes. 
