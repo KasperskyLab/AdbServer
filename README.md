@@ -34,12 +34,12 @@ emulators - you set a list of emulators that can be captured by desktop.jar <br>
 adbServerPort - you set the adb server port number (the default value is 5037)
 
 #### Device
-1) To include built library */artifacts/device.jar* in your project (later it will be substituted by jcenter).
-2) To give permissions for an access to the Internet 
+1) [Add `adbserver-device` dependency in your project](https://github.com/KasperskyLab/AdbServer#integration)
+2) Give permissions for an access to the Internet 
 ```gradle
 <uses-permission android:name="android.permission.INTERNET" />
 ``` 
-3) To use the class:
+3) Use the class:
 ```kotlin
 object AdbTerminal {
 
