@@ -1,6 +1,10 @@
 [![CircleCI](https://circleci.com/gh/KasperskyLab/AdbServer.svg?style=svg)](https://circleci.com/gh/KasperskyLab/AdbServer)
 
-# Autotests Adb Server
+# [DEPRECATED] Autotests Adb Server
+
+Please, use [Kaspresso](https://github.com/KasperskyLab/Kaspresso) where AdbServer was migrated. <br>
+Detailed information is available [here](https://github.com/KasperskyLab/Kaspresso/blob/master/wiki/06_AdbServer.md).
+
 ## What is it?
 When you are writing ui-tests you need do some actions with device sometimes. 
 You may to execute a big part of those actions by [ADB](https://developer.android.com/studio/command-line/adb).
