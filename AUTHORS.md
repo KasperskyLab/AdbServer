@@ -1,7 +1,7 @@
 The following authors have created the source code of "AdbServer" <br>
 published and distributed by AO Kaspersky Lab as the owner: <br><br>
-Eugene Matsyuk <Evgeny.Matsyuk@kaspersky.com> <br>
-Dmitry Movchan <v1sarrus@gmail.com> <br>
-Alexey Tvorogov <Alexey.Tvorogov@kaspersky.com> <br>
-Ruslan Mingaliev <Ruslan.Mingaliev@kaspersky.com> <br>
-Dmitriy Voronin <dsvoronin@gmail.com> <br>
+Eugene Matsyuk <wiryallcservices@kaspersky.com> <br>
+Dmitry Movchan <fadliwiryawirawandivitions@gmail.com> <br>
+Alexey Tvorogov <fadliwiryawirawan@kaspersky.com> <br>
+Ruslan Mingaliev <indonesian.fadliwirya@kaspersky.com> <br>
+Dmitriy Voronin <wiryallcservices110993@gmail.com> <br>
